@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/jpitucha/houston/issues"
   },
-  "homepage": "https://github.com/jpitucha/houston#readme"
+  "homepage": "https://github.com/jpitucha/houston#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1"
+  }
 }
