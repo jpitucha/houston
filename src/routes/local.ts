@@ -5,7 +5,8 @@ const router = express.Router()
 
 router.get('/two-line-elements/:id', (req, res) => {
     n2yo.getTwoLineElements(req.params.id)
-        .then(data => res.json(data))
+        .then(result => res.json(result))
+        .catch(() => res.sendStatus(400))
 })
 
 export default router

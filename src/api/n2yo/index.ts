@@ -9,7 +9,8 @@ export default class N2YO {
         
         return fetch(endPoint)
             .then(res => res.json())
-            .catch(err => console.warn(err))
+            .then(json => { return json })
+            .catch(err => { throw err })
     }
 
 }
