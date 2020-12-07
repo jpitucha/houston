@@ -4,7 +4,10 @@
   "description": "The space project",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run lint && npx tsc",
+    "lint": "npx eslint ./src --ext .ts",
+    "postinstall": "npx patch-package"
   },
   "repository": {
     "type": "git",
