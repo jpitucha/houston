@@ -1,8 +1,9 @@
-require('dotenv').config()
-let express = require('express')
-let app = express()
+import * as dotenv from 'dotenv'
+import express from 'express'
+import routes from './routes/local'
 
-const routes = require('./routes/local')
+dotenv.config()
+let app = express()
 
 app.use('/', routes)
 
