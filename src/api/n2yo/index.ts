@@ -6,7 +6,7 @@ export default class N2YO {
 
     static getTwoLineElements(id: string) {
         const endPoint: string = `${this.apiAddress}/tle/${id}&apiKey=${process.env.N2YO_KEY}`
-        console.log(endPoint)
+        
         return fetch(endPoint)
             .then(res => res.json())
             .catch(err => console.warn(err))
