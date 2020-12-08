@@ -1,0 +1,13 @@
+diff --git a/node_modules/@types/node-fetch/index.d.ts b/node_modules/@types/node-fetch/index.d.ts
+index ac01cea..177225d 100644
+--- a/node_modules/@types/node-fetch/index.d.ts
++++ b/node_modules/@types/node-fetch/index.d.ts
+@@ -145,7 +145,7 @@ export class Body {
+     body: NodeJS.ReadableStream;
+     bodyUsed: boolean;
+     buffer(): Promise<Buffer>;
+-    json(): Promise<any>;
++    json(): Promise<unknown>;
+     size: number;
+     text(): Promise<string>;
+     textConverted(): Promise<string>;
