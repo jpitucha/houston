@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "npx patch-package @types/node-fetch",
     "start": "npm run lint && npx tsc && node ./build/index.js",
-    "lint": "npx eslint ./src --ext .ts",
-    "postinstall": "npx patch-package @types/node-fetch"
+    "lint": "npx eslint ./src --ext .ts"
   },
   "repository": {
     "type": "git",
