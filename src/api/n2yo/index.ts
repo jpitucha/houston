@@ -8,8 +8,7 @@ export default class N2YO {
         const endPoint = `${this.apiAddress}/tle/${id}&apiKey=${process.env.N2YO_KEY}`
         
         return fetch(endPoint)
-            .then(res => res.json())
-            .then(json => { return json })
+            .then(res => { return res.json() })
             .catch(err => { throw err })
 
     }

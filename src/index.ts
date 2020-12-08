@@ -5,7 +5,7 @@ import Utils from './utils'
 
 dotenv.config()
 
-if (Utils.isDotEnvFileCorrect()) {
+if (Utils.hasDotEnvVars()) {
     const app = express()
 
     app.use('/', routes)
