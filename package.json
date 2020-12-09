@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm run lint && npx tsc && npx nodemon ./build/index.js",
+    "build": "npx tsc",
+    "start": "nodemon -w ./src -e ts -x 'npm run lint && npm run build && node build/index.js'",
     "lint": "npx eslint ./src --ext .ts"
   },
   "repository": {
