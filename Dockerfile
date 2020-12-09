@@ -1,11 +1,16 @@
 FROM node:14.15.1
 
-WORKDIR /houston
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
 
-COPY ["package.json", "package-lock.json*", "./"]
+COPY ["package.json", "/usr/src/app"]
 
-RUN npm install
+RUN npm i
+
+RUN npm install -g nodemon
 
 COPY . .
 
 CMD [ "npm", "run", "start" ]
+
+EXPOSE 3000
