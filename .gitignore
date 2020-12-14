@@ -105,3 +105,4 @@ dist
 
 # Compiled TypeScript files
 build
+database
