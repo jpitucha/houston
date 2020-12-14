@@ -6,8 +6,30 @@ services:
     build: .
     ports: 
       - 3000:3000
+    volumes: 
+      - ./src:/usr/src/app/src
     depends_on:
       - db
+    networks:
+    - app-network
+
   db:
     container_name: mongo
     image: mongo:latest
+    ports: 
+      - 27017:27017
+    volumes:
+      - ./config/init.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./config/mongod.conf:/etc/mongod.conf
+      - mongodb_data_container:/data/db
+    networks:
+    - app-network
+    restart: on-failure:5
+    command: ["mongod", "-f", "/etc/mongod.conf"]
+
+volumes:
+  mongodb_data_container:
+
+networks:
+  app-network:
+    driver: bridge
