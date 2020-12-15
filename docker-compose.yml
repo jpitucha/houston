@@ -18,6 +18,8 @@ services:
     image: mongo
     ports: 
       - 27017:27017
+    env_file: 
+      - .env
     volumes:
       - ./config/init.sh:/docker-entrypoint-initdb.d/init.sh
       - ./config/mongod.conf:/etc/mongod.conf
