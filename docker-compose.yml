@@ -27,11 +27,10 @@ services:
     networks:
     - app-network
     restart: on-failure:5
-    # command: ["mongod", "-f", "/etc/mongod.conf"]
     command: ["mongod"]
 
 volumes:
-  mongodb_data_container:
+  database:
 
 networks:
   app-network:
