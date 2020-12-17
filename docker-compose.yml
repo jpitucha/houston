@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  web:
+    container_name: houston
+    build: .
+    ports: 
+      - 3000:3000
+    volumes: 
+      - ./src:/usr/src/app/src
+    depends_on:
+      - db
+    networks:
+    - app-network
+
+  db:
+    container_name: mongo
+    image: mongo
+    ports: 
+      - 27017:27017
+    env_file: 
+      - .env
+    volumes:
+      - ./config/init.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./config/mongod.conf:/etc/mongod.conf
+      - ./database:/data/db
+    networks:
+    - app-network
+    restart: on-failure:5
+    command: ["mongod"]
+
+volumes:
+  database:
+
+networks:
+  app-network:
+    driver: bridge
