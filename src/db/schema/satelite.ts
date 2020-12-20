@@ -3,9 +3,11 @@ import Utilities from './../../utils'
 
 const headings = Utilities.getUsableHeadings()
 
-const sateliteSchema = new mongoose.Schema({
-    headings
-})
+const headingObj = { ...headings }
+const typeObj = { String }
+const finalObj = Object.assign(headingObj, typeObj)
+
+const sateliteSchema = new mongoose.Schema({ finalObj })
 
 const Satelite = mongoose.model('satelites', sateliteSchema)
 

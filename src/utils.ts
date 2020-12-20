@@ -1,5 +1,6 @@
 import * as fs from 'fs'
-import mongoose from 'mongoose'
+// import mongoose from 'mongoose'
+//import { Satelite } from './db/schema/satelite'
 export default class Utilities {
 
     static hasDotEnvVars(): boolean {
@@ -14,37 +15,51 @@ export default class Utilities {
         return true 
     }
 
+    // static hasUCSData(): Promise<void> {
+    //     return new Promise((resolve, reject) => {
+    //         Satelite.estimatedDocumentCount((err, count) => {
+    //             console.log(err)
+    //             console.log(count)
+    //             if (err) return reject()
+    //             if (count > 0) return resolve()
+    //             return reject()
+    //         })
+    //     })
+    // }
+
     static getUsableHeadings(): string[] {
-        fs.readFile('./ucs-satelite-db.txt', 'utf8', (err, fd) => {
-            if (err) return []
-            const headings = fd.split('\n')[0]?.split('\t')
-            const lastUsablePropIndex = headings?.findIndex(element => element == 'Comments') ?? 0
-            return headings?.slice(0, lastUsablePropIndex)
-        })
-        return []
+        const data = fs.readFileSync('./ucs-satelite-db.txt', 'utf8')
+        if (!data) return []
+        const headings = data.split('\n')[0]?.split('\t')
+        const lastUsablePropIndex = headings?.findIndex(element => element == 'Comments') ?? 0
+        const finalHeadings = headings?.slice(0, lastUsablePropIndex)
+        if (!finalHeadings) return []
+        return finalHeadings
     }
 
-    static decodeUCSData(): Promise<string[]> {
-        return new Promise((resolve, reject) => {
-            fs.readFile('./ucs-satelite-db.txt', 'utf8', (err, fd) => {
-                if (err) return reject()
-                return resolve(fd.split('\n').slice(1))
-            })
-        })
-    }
+    //static decodeUCSData(): Promise<string[]> {
+        // return new Promise((resolve, reject) => {
+        //     fs.readFile('./ucs-satelite-db.txt', 'utf8', (err, fd) => {
+        //         if (err) return reject()
+        //         return resolve(fd.split('\n').slice(1))
+        //     })
+        // })
+    //}
 
-    static databaseHasUCSData(): Promise<number> {
-        return new Promise((resolve, reject) => {
-            mongoose.model('satelites').estimatedDocumentCount((err, count) => {
-                if (err) return reject()
-                return resolve(count)
-            })
-        })
-    }
+    //static async prePopulateDatabase(): Promise<void> {
 
-    static prePopulateDatabase(): Promise<void> {
-        return new Promise((resolve, reject) => {
-            
-        })
-    }
+        // const headings = await this.getUsableHeadings()
+        // const data = await this.decodeUCSData()
+
+        // return await new Promise((resolve, reject) => {
+        //     data.forEach((value) => {
+        //         const obj = Object.assign({ ...headings }, { ...value.split('\t') })
+        //         console.log(obj)
+        //         mongoose.model('satelites').create( {  }, function(err: string) {
+        //             if (err) { console.log(err); return reject() }
+        //         })
+        //     })
+        //     return resolve()
+        // })        
+    //}
 }
