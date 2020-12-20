@@ -33,13 +33,18 @@ export default class Utilities {
         })
     }
 
-    static databaseHasUCSData(): Promise<void> {
+    static databaseHasUCSData(): Promise<number> {
         return new Promise((resolve, reject) => {
             mongoose.model('satelites').estimatedDocumentCount((err, count) => {
                 if (err) return reject()
-                if (count > 0) return resolve()
-                return reject()
+                return resolve(count)
             })
+        })
+    }
+
+    static prePopulateDatabase(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            
         })
     }
 }

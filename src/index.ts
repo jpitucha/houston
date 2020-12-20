@@ -13,15 +13,21 @@ if (!Utils.hasDotEnvVars()) {
 
 connectToDatabase()
     .then(() => Utils.databaseHasUCSData())
-    .then(() => {
-        const app = express()
-        app.use('/', routes)
-        app.listen(process.env.PORT, () => {
-            console.log(`Houston running at http://localhost:${process.env.PORT}`)
-            Utils.decodeUCSData()
-        })
+    .then((count) => {
+        if (count == 0) Utils.prePopulateDatabase()
+            .then(() => {
+                const app = express()
+                app.use('/', routes)
+                app.listen(process.env.PORT, () => {
+                    console.log(`Houston running at http://localhost:${process.env.PORT}`)
+                    Utils.decodeUCSData()
+                })
+            })
+            .catch(() => {
+                console.log('prepopulation the database failed, bye')
+            })
     })
     .catch(() => {
-        console.log('some error occured, bye')
+        console.log('connectting to database failed, bye')
         process.exit(1)
     })
