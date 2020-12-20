@@ -1,7 +1,12 @@
 import mongoose from 'mongoose'
+import Utilities from './../../utils'
 
-const sateliteSchema = new mongoose.Schema()
+const headings = Utilities.getUsableHeadings()
 
-const Satelite = mongoose.model('satelite', sateliteSchema)
+const sateliteSchema = new mongoose.Schema({
+    headings
+})
+
+const Satelite = mongoose.model('satelites', sateliteSchema)
 
 export { Satelite }

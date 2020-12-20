@@ -6,17 +6,20 @@ import Utils from './utils'
 
 dotenv.config()
 
-if (Utils.hasDotEnvVars()) {
-    connectToDatabase()
-
-    const app = express()
-
-    app.use('/', routes)
-
-    app.listen(process.env.PORT, () => {
-        console.log(`Houstonn running at http://localhost:${process.env.PORT}`)
-        Utils.decodeUCSData()
-    })
-} else {
-    console.log('.env file incorrect')
+if (!Utils.hasDotEnvVars()) {
+    console.error('.env file incorrect, exiting app..')
+    process.exit(1)
 }
+
+connectToDatabase()
+    .then(() => {
+        const app = express()
+        app.use('/', routes)
+        app.listen(process.env.PORT, () => {
+            console.log(`Houston running at http://localhost:${process.env.PORT}`)
+            Utils.decodeUCSData()
+        })
+    })
+    .catch(() => {
+        console.error('some error occured, exiting app..')
+    })
