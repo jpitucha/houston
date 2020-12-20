@@ -1,5 +1,5 @@
 import * as fs from 'fs'
-//import mongoose from 'mongoose'
+import mongoose from 'mongoose'
 export default class Utilities {
 
     static hasDotEnvVars(): boolean {
@@ -24,13 +24,22 @@ export default class Utilities {
         return []
     }
 
-    static decodeUCSData(): void {
-        // fs.readFile('./ucs-satelite-db.txt', 'utf8', (err, fd) => {
-        //     if (err) return
-        //     // for (let index = 0; index <= lastUsablePropIndex; index++) {
-        //     //     sateliteSchema.add({ headings[index]: 'string' })
-        //     // }
-        // })
+    static decodeUCSData(): Promise<string[]> {
+        return new Promise((resolve, reject) => {
+            fs.readFile('./ucs-satelite-db.txt', 'utf8', (err, fd) => {
+                if (err) return reject()
+                return resolve(fd.split('\n').slice(1))
+            })
+        })
     }
 
+    static databaseHasUCSData(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            mongoose.model('satelites').estimatedDocumentCount((err, count) => {
+                if (err) return reject()
+                if (count > 0) return resolve()
+                return reject()
+            })
+        })
+    }
 }

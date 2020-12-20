@@ -7,11 +7,12 @@ import Utils from './utils'
 dotenv.config()
 
 if (!Utils.hasDotEnvVars()) {
-    console.error('.env file incorrect, exiting app..')
+    console.log('.env file incorrect, bye')
     process.exit(1)
 }
 
 connectToDatabase()
+    .then(() => Utils.databaseHasUCSData())
     .then(() => {
         const app = express()
         app.use('/', routes)
@@ -21,5 +22,6 @@ connectToDatabase()
         })
     })
     .catch(() => {
-        console.error('some error occured, exiting app..')
+        console.log('some error occured, bye')
+        process.exit(1)
     })
