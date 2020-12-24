@@ -50,11 +50,10 @@ export default class Utilities {
             const satelites = this.getSatelitesFromFile()
 
             satelites.forEach((satelite: string[]) => {
-                const finalObj: Record<string, string> = {}
-                headings.forEach((heading, index) => { finalObj[heading] = satelite[index] ?? '' })
+                const sateliteDetails: Record<string, string> = {}
+                headings.forEach((heading, index) => { sateliteDetails[heading] = satelite[index] ?? '' })
 
-                DatabaseUtilities.createSatelite(finalObj)
-                .then()
+                DatabaseUtilities.createSatelite(sateliteDetails)
                 .catch((err) => { if (err) return reject() })           
             })
 

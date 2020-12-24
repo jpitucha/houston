@@ -7,7 +7,6 @@ export default class SateliteUtilities {
         return new Promise((resolve, reject) => {
             satelite.estimatedDocumentCount((err, count) => {
                 if (err) return reject()
-                console.log('has ucs data', count)
                 return resolve(count)
             })
         })
