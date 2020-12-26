@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 export default class SateliteUtilities {
 
-    static hasUCSData(): Promise<number> {
+    static getSateliteCount(): Promise<number> {
         const satelite = mongoose.connection.db.collection('satelites')
         return new Promise((resolve, reject) => {
             satelite.estimatedDocumentCount((err, count) => {
