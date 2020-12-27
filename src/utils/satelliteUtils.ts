@@ -1,15 +1,12 @@
-import mongoose from 'mongoose'
+import { Satellite } from './../db/schema/satellite'
+export default class SatelliteUtilities {
 
-export default class SateliteUtilities {
+    static async getSateliteCount(): Promise<number> {
+        return await Satellite.countDocuments()
+    }
 
-    static getSateliteCount(): Promise<number> {
-        const satelite = mongoose.connection.db.collection('satelites')
-        return new Promise((resolve, reject) => {
-            satelite.estimatedDocumentCount((err, count) => {
-                if (err) return reject()
-                return resolve(count)
-            })
-        })
+    static async removeCollectionIfExists(): Promise<void> {
+        return await Satellite.deleteMany({ }).exec()
     }
 
 }

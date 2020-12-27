@@ -3,8 +3,7 @@ import express from 'express'
 import routes from './routes/local'
 import dbConnectionProvider from './db/dbConnectionProvider'
 import Utilities from './utils/utils'
-import SatelliteUtils from './utils/satelliteUtils'
-import DatabaseUtilities from './utils/dbUtils'
+import SatelliteUtilities from './utils/satelliteUtils'
 
 dotenv.config()
 
@@ -15,31 +14,12 @@ if (!Utilities.hasDotEnvVars()) {
 
 const prepareDatabase = async (): Promise<void> => {
     await dbConnectionProvider.connectToDatabase()
-    const countDbSats = await SatelliteUtils.getSateliteCount()
+    const countDbSats = await SatelliteUtilities.getSateliteCount()
     const countFileSats = Utilities.countSatelitesFromFile()
-    if (countDbSats < countFileSats) {
-        await DatabaseUtilities.deleteAllSatelites()
-        await Utilities.prePopulateDatabase()
-    }
+    if (countDbSats < countFileSats) SatelliteUtilities.removeCollectionIfExists().then(() => Utilities.prePopulateDatabase())
 }
 
 prepareDatabase()
-
-//
-// dbConnectionProvider.connectToDatabase()
-//     .then(() => SatelliteUtils.getSateliteCount())
-//     .then((count) => {
-//         if (count < Utilities.countSatelitesFromFile()) {
-//             DatabaseUtilities.deleteAllSatelites()
-//             .then(() => Utilities.prePopulateDatabase())
-//             .then(() => console.log('Database prepopulated with UCSASA data'))
-//         }
-//     })
-//     .then(() => console.log('Database contain UCSASA data'))
-//     .catch((err) => {
-//         console.log(err)
-//         process.exit(1)
-//     })
 
 const app = express()
 app.use('/', routes)
