@@ -31,7 +31,7 @@ export default class Utilities {
         'launchVehicle',
         'cospar',
         'norad'
-    ]
+    ] as const
 
     static hasDotEnvVars(): boolean {
         if (!process.env.PORT) return false
@@ -63,16 +63,18 @@ export default class Utilities {
 
     static prePopulateDatabase(): Promise<void[]> {
         const headings = this.satelliteHeaders
+        type SatelliteField = typeof headings[number]
+        type ConstructedSatellite = {
+            [P in SatelliteField] : string | number
+        }
         const satellites = this.getSatelitesFromFile()
     
         const satellitesCreation = satellites.map((satellite) => {
-            const satelliteDetails: Record<string, string> = {}
-            headings.forEach((heading, index) => { satelliteDetails[heading] = satellite[index] ?? '' })
-            // const satelliteDetails = <SatelliteInterface> headings.reduce((accumulator, heading, index) => {
-            //     accumulator[heading] = satellite[index] ?? ''
-            //     return accumulator
-            // }, {})
-            return SatelliteUtilities.createSatelite(satelliteDetails)
+            const satelliteDetails = headings.reduce((accumulator, heading, index) => {
+                accumulator[heading] = satellite[index] ?? ''
+                return accumulator
+            }, {} as ConstructedSatellite)
+            return SatelliteUtilities.createSatelite(satelliteDetails as Record<string, string>)
         })
     
         return Promise.all(satellitesCreation)
