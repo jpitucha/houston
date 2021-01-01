@@ -1,5 +1,6 @@
 import * as fs from 'fs'
-import DatabaseUtilities from './dbUtils'
+import SatelliteUtilities from './satelliteUtils'
+//import SatelliteInterface from './types/satelliteInterface'
 
 export default class Utilities {
 
@@ -67,7 +68,11 @@ export default class Utilities {
         const satellitesCreation = satellites.map((satellite) => {
             const satelliteDetails: Record<string, string> = {}
             headings.forEach((heading, index) => { satelliteDetails[heading] = satellite[index] ?? '' })
-            return DatabaseUtilities.createSatelite(satelliteDetails)
+            // const satelliteDetails = <SatelliteInterface> headings.reduce((accumulator, heading, index) => {
+            //     accumulator[heading] = satellite[index] ?? ''
+            //     return accumulator
+            // }, {})
+            return SatelliteUtilities.createSatelite(satelliteDetails)
         })
     
         return Promise.all(satellitesCreation)

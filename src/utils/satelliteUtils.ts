@@ -1,8 +1,16 @@
 import { Satellite } from './../db/schema/satellite'
 export default class SatelliteUtilities {
 
-    static async getSateliteCount(): Promise<number> {
-        return await Satellite.countDocuments()
+    static createSatelite(newSatelite: Record<string, string>): void {
+        Satellite.create(newSatelite)
+            .catch((err) => {
+                console.log(err)
+                throw 'error occured while putting new satellite'
+            })
+    }
+
+    static getSateliteCount(): Promise<number> {
+        return Satellite.countDocuments()
     }
 
     static async removeCollectionIfExists(): Promise<void> {

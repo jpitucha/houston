@@ -26,3 +26,8 @@ export default interface SatelliteInterface {
     cospar: number,
     norad: number
 }
+
+export type keys = keyof SatelliteInterface
+
+
+
