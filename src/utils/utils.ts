@@ -69,11 +69,11 @@ export default class Utilities {
         const satellitesFromFile = this.getSatelitesFromFile()
     
         const satellitesCreation = satellitesFromFile.map((satellite) => {
-            const finalObj = headings.reduce((accumulator, heading, index) => {
+            const constructedSatellite = headings.reduce((accumulator, heading, index) => {
                 accumulator[heading] = satellite[index] ?? ''
                 return accumulator
             }, {} as ConstructedSatellite)
-            return SatelliteUtilities.createSatelite(finalObj as Record<string, string>)
+            return SatelliteUtilities.createSatelite(constructedSatellite as Record<string, string>)
         })
     
         return Promise.all(satellitesCreation)
