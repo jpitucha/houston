@@ -8,6 +8,7 @@ services:
       - 3000:3000
     volumes: 
       - ./src:/usr/src/app/src
+      - ./ucs-satelite-db.txt:/usr/src/app/ucs-satelite-db.txt
     depends_on:
       - db
     networks:

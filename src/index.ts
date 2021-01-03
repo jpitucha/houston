@@ -1,18 +1,28 @@
 import * as dotenv from 'dotenv'
 import express from 'express'
 import routes from './routes/local'
-import Utils from './utils'
+import dbConnectionProvider from './db/dbConnectionProvider'
+import Utilities from './utils/utils'
+import SatelliteUtilities from './utils/satelliteUtils'
 
 dotenv.config()
 
-if (Utils.hasDotEnvVars()) {
-    const app = express()
-
-    app.use('/', routes)
-
-    app.listen(process.env.PORT, () => {
-        console.log(`Houston running at http://localhost:${process.env.PORT}`)
-    })
-} else {
-    console.log('.env file incorrect')
+if (!Utilities.hasDotEnvVars()) {
+    console.log('.env file incorrect, bye')
+    process.exit(1)
 }
+
+const prepareDatabase = async (): Promise<void> => {
+    await dbConnectionProvider.connectToDatabase()
+    const countDbSats = await SatelliteUtilities.getSateliteCount()
+    const countFileSats = Utilities.countSatelitesFromFile()
+    if (countDbSats < countFileSats) SatelliteUtilities.removeCollectionIfExists().then(() => Utilities.prePopulateDatabase())
+}
+
+prepareDatabase()
+
+const app = express()
+app.use('/', routes)
+app.listen(process.env.PORT, () => {
+    console.log(`Houston running at http://localhost:${process.env.PORT}`)
+})
