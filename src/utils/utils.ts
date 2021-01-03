@@ -1,6 +1,5 @@
 import * as fs from 'fs'
 import SatelliteUtilities from './satelliteUtils'
-//import SatelliteInterface from './types/satelliteInterface'
 
 export default class Utilities {
 
@@ -67,14 +66,14 @@ export default class Utilities {
         type ConstructedSatellite = {
             [P in SatelliteField] : string | number
         }
-        const satellites = this.getSatelitesFromFile()
+        const satellitesFromFile = this.getSatelitesFromFile()
     
-        const satellitesCreation = satellites.map((satellite) => {
-            const satelliteDetails = headings.reduce((accumulator, heading, index) => {
+        const satellitesCreation = satellitesFromFile.map((satellite) => {
+            const finalObj = headings.reduce((accumulator, heading, index) => {
                 accumulator[heading] = satellite[index] ?? ''
                 return accumulator
             }, {} as ConstructedSatellite)
-            return SatelliteUtilities.createSatelite(satelliteDetails as Record<string, string>)
+            return SatelliteUtilities.createSatelite(finalObj as Record<string, string>)
         })
     
         return Promise.all(satellitesCreation)
