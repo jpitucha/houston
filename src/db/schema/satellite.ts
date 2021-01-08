@@ -1,4 +1,5 @@
-import mongoose from 'mongoose'
+import mongoose, { Document } from 'mongoose'
+import SatelliteInterface from '../../utils/types/satelliteInterface'
 
 const schemaObj = {
     nameOfSatellite: { type: String, required: true, unique: true },
@@ -29,7 +30,9 @@ const schemaObj = {
     norad: { type: String }
 }
 
+type SatelliteDocument = Document & SatelliteInterface
+
 const sateliteSchema = new mongoose.Schema({ ...schemaObj })
-const Satellite = mongoose.model('satellite', sateliteSchema)
+const Satellite = mongoose.model<SatelliteDocument>('satellite', sateliteSchema)
 
 export { Satellite }
