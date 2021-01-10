@@ -61,7 +61,7 @@ export default class Utilities {
         return data.split('\n').length - 2
     }
 
-    static prePopulateDatabase(): Promise<void[]> {
+    static prePopulateDatabase(): Promise<SatelliteInterface[]> {
         const headings = this.satelliteHeaders
         type SatelliteField = typeof headings[number]
         type ConstructedSatellite = {

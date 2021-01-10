@@ -35,4 +35,4 @@ type SatelliteDocument = Document & SatelliteInterface
 const sateliteSchema = new mongoose.Schema({ ...schemaObj })
 const Satellite = mongoose.model<SatelliteDocument>('satellite', sateliteSchema)
 
-export { Satellite }
+export { Satellite, SatelliteDocument }

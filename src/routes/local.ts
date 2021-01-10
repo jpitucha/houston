@@ -4,7 +4,7 @@ import SatelliteUtilities from '../utils/satelliteUtils'
 import _ from 'lodash'
 
 const router = express.Router()
-const propsToPick = ['_id', 'officialName', 'perigee', 'apogee', 'operator', 'operatorCountry', 'purpose']
+const PROPS_TO_SEND_IN_RESPOSNE = ['_id', 'officialName', 'perigee', 'apogee', 'operator', 'operatorCountry', 'purpose']
 
 router.get('/two-line-elements/:id', (req, res) => {
     if (req.params.id === undefined) return res.sendStatus(400)
@@ -13,34 +13,24 @@ router.get('/two-line-elements/:id', (req, res) => {
         .catch(() => res.sendStatus(400))
 })
 
-router.get('/satellite', (req, res) => {
-    if (req.body.id === undefined && req.body.name === undefined) return res.sendStatus(400)
-    if (req.body.id) {
-        SatelliteUtilities.getSatelliteById(req.body.id)
-            .then((doc) => {
-                if (!doc) return res.sendStatus(400)
-                return res.json(_.pick(doc, propsToPick))
+router.get('/satellite', (req, res) => {    
+    if (typeof req.query.id === 'string') {
+        return SatelliteUtilities.getSatelliteById(req.query.id)
+            .then((satelliteDoc) => {
+                if (!satelliteDoc) return res.sendStatus(400)
+                return res.json(_.pick(satelliteDoc, PROPS_TO_SEND_IN_RESPOSNE))
             })
             .catch(() => { return res.sendStatus(400) })
     }
-    if (req.body.name) {
-        SatelliteUtilities.getSatelliteByName(req.body.name)
-            .then((doc) => {
-                if (!doc) return res.sendStatus(400)
-                return res.json(_.pick(doc, propsToPick))
+    if (typeof req.query.name === 'string') {
+        return SatelliteUtilities.getSatelliteByName(req.query.name)
+            .then((satelliteDoc) => {
+                if (!satelliteDoc) return res.sendStatus(400)
+                return res.json(_.pick(satelliteDoc, PROPS_TO_SEND_IN_RESPOSNE))
             })
             .catch(() => { return res.sendStatus(400) })
     }
-})
-
-router.get('/satellite/:name', (req, res) => {
-    if (req.params.name === undefined) return res.sendStatus(400)
-    SatelliteUtilities.getSatelliteByName(req.params.name)
-        .then((doc) => {
-            if (!doc) return res.sendStatus(400)
-            return res.json(doc)
-        })
-        .catch(() => { return res.sendStatus(400) })
+    res.sendStatus(400)
 })
 
 export default router
