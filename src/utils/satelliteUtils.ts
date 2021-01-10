@@ -3,28 +3,23 @@ import SatelliteInterface from '../utils/types/satelliteInterface'
 export default class SatelliteUtilities {
 
     static async createSatelite(newSatelite: SatelliteInterface): Promise<void> {
-        await Satellite.create(newSatelite)
-            .catch((err) => {
-                console.log(err)
-                throw 'error occured while putting new satellite'
-            })
-        return Promise.resolve()
+        try {
+            await Satellite.create(newSatelite)
+        } catch (err) {
+            throw 'error occured while putting new satellite'
+        }
     }
 
-    static async getSatelliteById(id: string): Promise<SatelliteInterface> {
-        let satellite = <SatelliteInterface> {}
-        await Satellite.findById(id).exec()
-            .then((doc) => {
-                if (doc) satellite = doc
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-        return satellite
+    static getSatelliteById(id: string): Promise<SatelliteInterface | null> {
+        return Satellite.findById(id).exec();
+    }
+
+    static getSatelliteByName(name: string): Promise<SatelliteInterface | null> {
+        return Satellite.findOne({ officialName: name }).exec()
     }
 
     static getSateliteCount(): Promise<number> {
-        return Satellite.countDocuments()
+        return Satellite.countDocuments().exec()
     }
 
     static removeCollectionIfExists(): Promise<void> {

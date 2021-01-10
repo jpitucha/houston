@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv'
 import express from 'express'
+import bodyParser from 'body-parser'
 import routes from './routes/local'
 import dbConnectionProvider from './db/dbConnectionProvider'
 import Utilities from './utils/utils'
@@ -22,6 +23,8 @@ const prepareDatabase = async (): Promise<void> => {
 prepareDatabase()
 
 const app = express()
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }))
 app.use('/', routes)
 app.listen(process.env.PORT, () => {
     console.log(`Houston running at http://localhost:${process.env.PORT}`)
