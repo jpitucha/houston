@@ -9,3 +9,4 @@ The space project
   - MONGO_INITDB_ROOT_PASSWORD
   - DB_USERNAME
   - DB_PASSWORD
+  - DB_URL
