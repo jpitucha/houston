@@ -27,8 +27,8 @@ router.get('/satellite', (req, res) => {
         return SatelliteUtilities.getSatelliteByName(req.query.name)
             .then((satelliteDoc) => {
                 if (!satelliteDoc) return res.sendStatus(400)
-                const satellitesArray = <Partial<SatelliteInterface>[]> []
-                satelliteDoc.map((satellite) => satellitesArray.push(_.pick(satellite, PROPS_TO_SEND_IN_RESPOSNE)))
+                const satellitesArray = <Partial<SatelliteInterface>[]>
+                    satelliteDoc.map((satellite) => _.pick(satellite, PROPS_TO_SEND_IN_RESPOSNE))
                 return res.json(satellitesArray)
             })
             .catch(() => { return res.sendStatus(400) })
