@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 import SatelliteUtilities from './satelliteUtils'
+import SatelliteInterface from './types/satelliteInterface'
 
 export default class Utilities {
 
@@ -60,7 +61,7 @@ export default class Utilities {
         return data.split('\n').length - 2
     }
 
-    static prePopulateDatabase(): Promise<void[]> {
+    static prePopulateDatabase(): Promise<SatelliteInterface[]> {
         const headings = this.satelliteHeaders
         type SatelliteField = typeof headings[number]
         type ConstructedSatellite = {
@@ -73,7 +74,7 @@ export default class Utilities {
                 accumulator[heading] = satellite[index] ?? ''
                 return accumulator
             }, {} as ConstructedSatellite)
-            return SatelliteUtilities.createSatelite(constructedSatellite as Record<string, string>)
+            return SatelliteUtilities.createSatelite(constructedSatellite as SatelliteInterface)
         })
     
         return Promise.all(satellitesCreation)

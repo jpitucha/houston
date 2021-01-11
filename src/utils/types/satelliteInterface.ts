@@ -28,6 +28,3 @@ export default interface SatelliteInterface {
 }
 
 export type keys = keyof SatelliteInterface
-
-
-
