@@ -35,7 +35,7 @@ type SatelliteDocument = Document & SatelliteInterface
 
 const sateliteSchema = new mongoose.Schema({ ...schemaObj })
 
-sateliteSchema.plugin(fuzzySearching, { fields: ['officialName'] })
+sateliteSchema.plugin(fuzzySearching, { fields: [ { name: 'officialName', minSize: 2 } ] })
 
 const Satellite = mongoose.model<SatelliteDocument>('satellite', sateliteSchema)
 
