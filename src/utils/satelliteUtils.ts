@@ -3,7 +3,7 @@ import SatelliteInterface from '../utils/types/satelliteInterface'
 import SatelliteDocument from '../utils/types/satelliteInterface'
 export default class SatelliteUtilities {
 
-    static async createSatelite(newSatelite: SatelliteInterface): Promise<SatelliteInterface> {
+    static async createSatelite(newSatelite: SatelliteInterface): Promise<SatelliteDocument> {
         return Satellite.create(newSatelite)
     }
 
@@ -11,8 +11,12 @@ export default class SatelliteUtilities {
         return Satellite.findById(id).exec();
     }
 
-    static getSatelliteByName(name: string): Promise<SatelliteDocument | null> {
-        return Satellite.findOne({ officialName: name }).exec()
+    static async getSatelliteByName(name: string): Promise<SatelliteDocument | null> {
+        const foundSatellites = await Satellite.fuzzySearch(name);
+        if (foundSatellites[0]) {
+            return foundSatellites[0];
+        }
+        return null;
     }
 
     static getSateliteCount(): Promise<number> {
