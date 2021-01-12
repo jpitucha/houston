@@ -36,4 +36,8 @@ router.get('/satellite', (req, res) => {
     res.sendStatus(400)
 })
 
+router.get('satellite-with-range', (req, res) => {
+    
+})
+
 export default router
