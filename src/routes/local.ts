@@ -36,8 +36,14 @@ router.get('/satellite', (req, res) => {
     res.sendStatus(400)
 })
 
-router.get('satellite-with-range', (req, res) => {
-    
+router.get('/satellite-with-range', async (req, res) => {
+    if (typeof req.query.xstart !== 'string'
+     || typeof req.query.xend !== 'string'
+     || typeof req.query.ystart !== 'string'
+     || typeof req.query.yend !== 'string') return res.sendStatus(400)
+     const selectedSatellites = await SatelliteUtilities.getSatellitesByRange(parseInt(req.query.xstart), parseInt(req.query.ystart), parseInt(req.query.xend), parseInt(req.query.yend))
+     if (selectedSatellites.length === 0) return res.sendStatus(400)
+     res.json(selectedSatellites)
 })
 
 export default router

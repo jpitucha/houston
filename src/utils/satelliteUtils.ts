@@ -19,15 +19,15 @@ export default class SatelliteUtilities {
         return null
     }
 
-    static async getSatellitesByRange(x: number, y: number, xRange: number, yRange: number): Promise<SatelliteDocument[]> | null {
+    static async getSatellitesByRange(xStart: number, yStart: number, xEnd: number, yEnd: number): Promise<SatelliteDocument[]> {
         const foundSatellites = await Satellite.find({
-            perigee: { $lt: Math.floor(x - xRange / 2), $gt: Math.floor(x + xRange / 2) },
-            apogee: { $lt: Math.floor(y - yRange / 2), $gt: Math.floor(y + yRange / 2) }
+            perigee: { $lt: Math.floor(xStart - xEnd / 2), $gt: Math.floor(xStart + xEnd / 2) },
+            apogee: { $lt: Math.floor(yStart - yEnd / 2), $gt: Math.floor(yStart + yEnd / 2) }
         }).exec()
         if (foundSatellites.length > 0) {
             return foundSatellites
         }
-        return null
+        return []
     }
 
     static getSateliteCount(): Promise<number> {
