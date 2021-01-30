@@ -21,13 +21,13 @@ export default class SatelliteUtilities {
 
     static async getSatellitesByRange(xStart: number, yStart: number, xEnd: number, yEnd: number): Promise<SatelliteDocument[]> {
         const foundSatellites = await Satellite.find({
-            perigee: { $lt: Math.floor(xStart - xEnd / 2), $gt: Math.floor(xStart + xEnd / 2) },
-            apogee: { $lt: Math.floor(yStart - yEnd / 2), $gt: Math.floor(yStart + yEnd / 2) }
+            perigee: { $gt: Math.floor(xStart), $lt: Math.floor(xEnd) },
+            apogee: { $gt: Math.floor(yStart), $lt: Math.floor(yEnd) }
         }).exec()
-        if (foundSatellites.length > 0) {
-            return foundSatellites
+        if (foundSatellites.length === 0) {
+            return []
         }
-        return []
+        return foundSatellites
     }
 
     static getSateliteCount(): Promise<number> {
