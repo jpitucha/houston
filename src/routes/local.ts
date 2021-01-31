@@ -2,9 +2,9 @@ import express from "express";
 import n2yo from "./../api/n2yo/index.js";
 import SatelliteUtilities from "../utils/satelliteUtils";
 import _ from "lodash";
-import SatelliteInterface from "../utils/types/satelliteInterface.js";
 import { object, number, string, assert } from "superstruct";
 import { Range } from '../utils/types/rangeType'
+import SatelliteResponseInterface from '../utils/types/parialSatelliteInterface'
 
 const router = express.Router();
 const PROPS_TO_SEND_IN_RESPOSNE = [
@@ -40,7 +40,7 @@ router.get("/satellite", (req, res) => {
     return SatelliteUtilities.getSatelliteByName(req.query.name)
       .then((satelliteDoc) => {
         if (!satelliteDoc) return res.sendStatus(400);
-        const satellitesArray = <Partial<SatelliteInterface>[]>(
+        const satellitesArray = <SatelliteResponseInterface[]>(
           satelliteDoc.map((satellite) =>
             _.pick(satellite, PROPS_TO_SEND_IN_RESPOSNE)
           )
@@ -89,7 +89,7 @@ router.get("/satellite-with-range", async (req, res) => {
 
   const selectedSatellites = await SatelliteUtilities.getSatellitesByRange(range);
   if (_.isEmpty(selectedSatellites)) return res.sendStatus(400);
-  const satellitesArray = <Partial<SatelliteInterface>[]>(
+  const satellitesArray = <SatelliteResponseInterface[]>(
     selectedSatellites.map((satellite) =>
       _.pick(satellite, PROPS_TO_SEND_IN_RESPOSNE)
     )
