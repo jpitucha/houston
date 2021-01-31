@@ -4,6 +4,7 @@ import SatelliteUtilities from "../utils/satelliteUtils";
 import _ from "lodash";
 import SatelliteInterface from "../utils/types/satelliteInterface.js";
 import { object, number, string, assert } from "superstruct";
+import { Range } from '../utils/types/rangeType'
 
 const router = express.Router();
 const PROPS_TO_SEND_IN_RESPOSNE = [
@@ -79,12 +80,14 @@ router.get("/satellite-with-range", async (req, res) => {
     return res.sendStatus(400);
   }
 
-  const selectedSatellites = await SatelliteUtilities.getSatellitesByRange(
-    parseInt(input.xstart),
-    parseInt(input.ystart),
-    parseInt(input.xend),
-    parseInt(input.yend)
-  );
+  const range: Range = {
+    xStart: parseInt(input.xstart),
+    yStart: parseInt(input.ystart),
+    xEnd: parseInt(input.xend),
+    yEnd: parseInt(input.yend)
+  }
+
+  const selectedSatellites = await SatelliteUtilities.getSatellitesByRange(range);
   if (_.isEmpty(selectedSatellites)) return res.sendStatus(400);
   const satellitesArray = <Partial<SatelliteInterface>[]>(
     selectedSatellites.map((satellite) =>

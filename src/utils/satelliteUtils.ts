@@ -1,8 +1,9 @@
 import { Satellite } from './../db/schema/satellite'
 import SatelliteInterface from '../utils/types/satelliteInterface'
 import SatelliteDocument from '../utils/types/satelliteInterface'
-export default class SatelliteUtilities {
+import { Range } from '../utils/types/rangeType'
 
+export default class SatelliteUtilities {
     static async createSatelite(newSatelite: SatelliteInterface): Promise<SatelliteDocument> {
         return Satellite.create(newSatelite)
     }
@@ -19,10 +20,10 @@ export default class SatelliteUtilities {
         return null
     }
 
-    static async getSatellitesByRange(xStart: number, yStart: number, xEnd: number, yEnd: number): Promise<SatelliteDocument[]> {
+    static async getSatellitesByRange(range: Range): Promise<SatelliteDocument[]> {
         const foundSatellites = await Satellite.find({
-            perigee: { $gte: xStart, $lte: xEnd },
-            apogee: { $gte: yStart, $lte: yEnd }
+            perigee: { $gte: range.xStart, $lte: range.xEnd },
+            apogee: { $gte: range.yStart, $lte: range.yEnd }
         }).exec()
         return foundSatellites
     }
