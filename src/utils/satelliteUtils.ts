@@ -21,12 +21,9 @@ export default class SatelliteUtilities {
 
     static async getSatellitesByRange(xStart: number, yStart: number, xEnd: number, yEnd: number): Promise<SatelliteDocument[]> {
         const foundSatellites = await Satellite.find({
-            perigee: { $gt: Math.floor(xStart), $lt: Math.floor(xEnd) },
-            apogee: { $gt: Math.floor(yStart), $lt: Math.floor(yEnd) }
+            perigee: { $gte: xStart, $lte: xEnd },
+            apogee: { $gte: yStart, $lte: yEnd }
         }).exec()
-        if (foundSatellites.length === 0) {
-            return []
-        }
         return foundSatellites
     }
 
@@ -35,7 +32,7 @@ export default class SatelliteUtilities {
     }
 
     static removeCollectionIfExists(): Promise<void> {
-        return Satellite.deleteMany({ }).exec()
+        return Satellite.deleteMany({}).exec()
     }
 
 }
