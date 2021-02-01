@@ -42,7 +42,7 @@ export default class Utilities {
         if (!process.env.DB_USERNAME) return false
         if (!process.env.DB_PASSWORD) return false
         if (!process.env.DB_URL) return false
-        return true 
+        return true
     }
 
     static getSatelitesFromFile(): Array<string[]> {
@@ -52,7 +52,7 @@ export default class Utilities {
         const usableDataMaxIndex = this.satelliteHeaders.length
         const splittedSatelitesData: Array<string[]> = []
         satelites.forEach((value) => { splittedSatelitesData.push(value.split('\t').slice(0, usableDataMaxIndex)) })
-        return splittedSatelitesData.slice(0, splittedSatelitesData.length -1)
+        return splittedSatelitesData.slice(0, splittedSatelitesData.length - 1)
     }
 
     static countSatelitesFromFile(): number {
@@ -65,19 +65,64 @@ export default class Utilities {
         const headings = this.satelliteHeaders
         type SatelliteField = typeof headings[number]
         type ConstructedSatellite = {
-            [P in SatelliteField] : string | number
+            [P in SatelliteField]: string | number
         }
         const satellitesFromFile = this.getSatelitesFromFile()
-    
+
         const satellitesCreation = satellitesFromFile.map((satellite) => {
             const constructedSatellite = headings.reduce((accumulator, heading, index) => {
                 accumulator[heading] = satellite[index] ?? ''
                 return accumulator
             }, {} as ConstructedSatellite)
+
             return SatelliteUtilities.createSatelite(constructedSatellite as SatelliteInterface)
         })
-    
+
         return Promise.all(satellitesCreation)
-      }
+    }
+
+    static checkSatellitesPropsReliability(): {
+        completeSatellites: SatelliteInterface[],
+        incompleteSatellites: SatelliteInterface[]
+    } {
+        const headings = this.satelliteHeaders
+        type SatelliteField = typeof headings[number]
+        type ConstructedSatellite = {
+            [P in SatelliteField]: string | number
+        }
+        const satellitesFromFile = this.getSatelitesFromFile()
+
+        const satellitesCreation = satellitesFromFile.map((satellite) => {
+            const constructedSatellite = headings.reduce((accumulator, heading, index) => {
+                accumulator[heading] = satellite[index] ?? ''
+                return accumulator
+            }, {} as ConstructedSatellite)
+            return constructedSatellite as SatelliteInterface
+        })
+
+        const completeSatellites: SatelliteInterface[] = []
+        const incompleteSatellites: SatelliteInterface[] = []
+
+        const allowedFields: string[] = [
+            "officialName",
+            "perigee",
+            "apogee",
+            "operator",
+            "operatorCountry",
+            "purpose"
+        ]
+
+        satellitesCreation.forEach((value) => {
+            if (Object.entries(value).some(propertyAndValue => allowedFields.includes(propertyAndValue[0]) && propertyAndValue[1] === '')) {
+                return incompleteSatellites.push(value)
+            }
+            completeSatellites.push(value)
+        })
+
+        return {
+            completeSatellites,
+            incompleteSatellites
+        }
+    }
 
 }

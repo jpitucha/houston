@@ -13,6 +13,8 @@ if (!Utilities.hasDotEnvVars()) {
     process.exit(1)
 }
 
+console.log(Utilities.checkSatellitesPropsReliability())
+
 const prepareDatabase = async (): Promise<void> => {
     await dbConnectionProvider.connectToDatabase()
     const countDbSats = await SatelliteUtilities.getSateliteCount()
