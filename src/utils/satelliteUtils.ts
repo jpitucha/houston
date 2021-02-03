@@ -1,7 +1,6 @@
 import { Satellite } from './../db/schema/satellite'
 import SatelliteInterface from '../utils/types/satelliteInterface'
 import SatelliteDocument from '../utils/types/satelliteInterface'
-import { Range } from '../utils/types/rangeType'
 
 export default class SatelliteUtilities {
     static async createSatelite(newSatelite: SatelliteInterface): Promise<SatelliteDocument> {
