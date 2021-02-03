@@ -61,21 +61,10 @@ export default class Utilities {
         return data.split('\n').length - 2
     }
 
-    static prePopulateDatabase(): Promise<SatelliteInterface[]> {
-        const headings = this.satelliteHeaders
-        type SatelliteField = typeof headings[number]
-        type ConstructedSatellite = {
-            [P in SatelliteField]: string | number
-        }
-        const satellitesFromFile = this.getSatelitesFromFile()
-
-        const satellitesCreation = satellitesFromFile.map((satellite) => {
-            const constructedSatellite = headings.reduce((accumulator, heading, index) => {
-                accumulator[heading] = satellite[index] ?? ''
-                return accumulator
-            }, {} as ConstructedSatellite)
-
-            return SatelliteUtilities.createSatelite(constructedSatellite as SatelliteInterface)
+    static prePopulateDatabase(satellites: SatelliteInterface[]): Promise<SatelliteInterface[]> {
+        const satellitesCreation: Promise<SatelliteInterface>[] = []
+        satellites.forEach((satellite) => {
+            satellitesCreation.push(SatelliteUtilities.createSatelite(satellite as SatelliteInterface))
         })
 
         return Promise.all(satellitesCreation)
@@ -103,7 +92,7 @@ export default class Utilities {
         const completeSatellites: SatelliteInterface[] = []
         const incompleteSatellites: SatelliteInterface[] = []
 
-        const allowedFields: string[] = [
+        const requiredFields: string[] = [
             "officialName",
             "perigee",
             "apogee",
@@ -113,7 +102,7 @@ export default class Utilities {
         ]
 
         satellitesCreation.forEach((value) => {
-            if (Object.entries(value).some(propertyAndValue => allowedFields.includes(propertyAndValue[0]) && propertyAndValue[1] === '')) {
+            if (Object.entries(value).some(propertyAndValue => requiredFields.includes(propertyAndValue[0]) && propertyAndValue[1] === '')) {
                 return incompleteSatellites.push(value)
             }
             completeSatellites.push(value)
