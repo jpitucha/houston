@@ -1,8 +1,8 @@
 import { Satellite } from './../db/schema/satellite'
 import SatelliteInterface from '../utils/types/satelliteInterface'
 import SatelliteDocument from '../utils/types/satelliteInterface'
-export default class SatelliteUtilities {
 
+export default class SatelliteUtilities {
     static async createSatelite(newSatelite: SatelliteInterface): Promise<SatelliteDocument> {
         return Satellite.create(newSatelite)
     }
@@ -24,7 +24,7 @@ export default class SatelliteUtilities {
     }
 
     static removeCollectionIfExists(): Promise<void> {
-        return Satellite.deleteMany({ }).exec()
+        return Satellite.deleteMany({}).exec()
     }
 
 }

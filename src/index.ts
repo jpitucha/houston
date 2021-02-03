@@ -17,7 +17,11 @@ const prepareDatabase = async (): Promise<void> => {
     await dbConnectionProvider.connectToDatabase()
     const countDbSats = await SatelliteUtilities.getSateliteCount()
     const countFileSats = Utilities.countSatelitesFromFile()
-    if (countDbSats < countFileSats) SatelliteUtilities.removeCollectionIfExists().then(() => Utilities.prePopulateDatabase())
+    if (countDbSats < countFileSats) SatelliteUtilities.removeCollectionIfExists()
+        .then(() => {
+            const verifiedSatellites = Utilities.checkSatellitesPropsReliability()
+            Utilities.prePopulateDatabase(verifiedSatellites.completeSatellites)
+        })
 }
 
 prepareDatabase()
