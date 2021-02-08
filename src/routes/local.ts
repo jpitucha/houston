@@ -16,6 +16,7 @@ const PROPS_TO_SEND_IN_RESPOSNE = [
   "purpose",
 ];
 
+
 router.get("/two-line-elements/:id", (req, res, next) => {
   const id = req.params.id
   const idCheck = pattern(string(), /[0-9]+/)
@@ -28,9 +29,7 @@ router.get("/two-line-elements/:id", (req, res, next) => {
   }
   req.id = id
   next()
-})
-
-router.get("/two-line-elements/:id", (req, res) => {
+}, (req, res) => {
   n2yo
     .getTwoLineElements(req.id)
     .then((result) => res.json(result))
@@ -49,9 +48,7 @@ router.get("/satellite/by-id/:id", (req, res, next) => {
   }
   req.id = id
   next()
-})
-
-router.get("/satellite/by-id/:id", (req, res) => {
+}, (req, res) => {
   return SatelliteUtilities.getSatelliteById(req.id)
     .then((satelliteDoc) => {
       if (!satelliteDoc) return res.sendStatus(400);
@@ -68,9 +65,7 @@ router.get("/satellite/by-name/:name", (req, res, next) => {
   if (!name) return res.sendStatus(400)
   req.name = name
   next()
-})
-
-router.get("/satellite/by-name/:name", (req, res) => {
+}, (req, res) => {
   return SatelliteUtilities.getSatelliteByName(req.name)
     .then((satelliteDoc) => {
       if (!satelliteDoc) return res.sendStatus(400);
