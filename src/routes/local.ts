@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request } from "express";
 import n2yo from "./../api/n2yo/index.js";
 import SatelliteUtilities from "../utils/satelliteUtils";
 import _ from "lodash";
@@ -16,40 +16,38 @@ const PROPS_TO_SEND_IN_RESPOSNE = [
   "purpose",
 ];
 
-
-router.get("/two-line-elements/:id", (req, res, next) => {
-  const id = req.params.id
+const satelliteIdRouteValidation = (expressRequest: Request): boolean => {
+  const id = expressRequest.params.id
   const idCheck = pattern(string(), /[0-9]+/)
 
-  if (!id) return res.sendStatus(400)
+  if (!id) return false
   try {
     assert(id, idCheck)
   } catch {
-    return res.sendStatus(400)
+    return false
   }
-  req.id = id
-  next()
-}, (req, res) => {
+  return true
+}
+
+const satelliteNameRouteValidation = (expressRequest: Request): boolean => {
+  const name = expressRequest.params.officialName
+  if (!name) return false
+  return true
+}
+
+router.get("/two-line-elements/:id", (req, res) => {
+  if (!satelliteIdRouteValidation(req)) return res.sendStatus(400)
+
   n2yo
-    .getTwoLineElements(req.id)
+    .getTwoLineElements(req.params.id!)
     .then((result) => res.json(result))
     .catch(() => res.sendStatus(400));
 });
 
-router.get("/satellite/by-id/:id", (req, res, next) => {
-  const id = req.params.id
-  const idCheck = pattern(string(), /[0-9]+/)
+router.get("/satellite/by-id/:id", (req, res) => {
+  if (!satelliteIdRouteValidation(req)) return res.sendStatus(400)
 
-  if (!id) return res.sendStatus(400)
-  try {
-    assert(id, idCheck)
-  } catch {
-    return res.sendStatus(400)
-  }
-  req.id = id
-  next()
-}, (req, res) => {
-  return SatelliteUtilities.getSatelliteById(req.id)
+  return SatelliteUtilities.getSatelliteById(req.params.id!)
     .then((satelliteDoc) => {
       if (!satelliteDoc) return res.sendStatus(400);
       return res.json(_.pick(satelliteDoc, PROPS_TO_SEND_IN_RESPOSNE));
@@ -59,14 +57,10 @@ router.get("/satellite/by-id/:id", (req, res, next) => {
     });
 })
 
-router.get("/satellite/by-name/:name", (req, res, next) => {
-  const name = req.params.name
+router.get("/satellite/by-name/:name", (req, res) => {
+  if (satelliteNameRouteValidation(req)) return res.sendStatus(400)
 
-  if (!name) return res.sendStatus(400)
-  req.name = name
-  next()
-}, (req, res) => {
-  return SatelliteUtilities.getSatelliteByName(req.name)
+  return SatelliteUtilities.getSatelliteByName(req.params.name!)
     .then((satelliteDoc) => {
       if (!satelliteDoc) return res.sendStatus(400);
       const satellitesArray = <SatelliteResponseInterface[]>(
