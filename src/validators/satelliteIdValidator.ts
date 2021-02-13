@@ -1,15 +1,12 @@
-import { Request } from 'express'
+import { Request, Response } from 'express'
 import { assert, pattern, string } from 'superstruct'
 
-export const satelliteIdRouteValidation = (expressRequest: Request): boolean => {
-    const id = expressRequest.params.id
+export const satelliteIdRouteValidation = (req: Request, res: Response, next: CallableFunction) => {
     const idCheck = pattern(string(), /[0-9]+/)
-
-    if (!id) return false
     try {
-        assert(id, idCheck)
+        assert(req.params.id, idCheck)
+        return next()
     } catch {
-        return false
+        return res.sendStatus(400)
     }
-    return true
 }
