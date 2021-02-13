@@ -5,6 +5,7 @@ import _ from "lodash";
 import SatelliteResponseInterface from '../utils/types/parialSatelliteInterface'
 import { satelliteIdRouteValidation } from './../validators/satelliteIdValidator'
 import { satelliteNameRouteValidation } from './../validators/satelliteNameValidator'
+import { RequestWithID, RequestWithName } from './../utils/types/extendedRequestInterface'
 
 const router = express.Router();
 
@@ -20,18 +21,18 @@ const PROPS_TO_SEND_IN_RESPOSNE = [
 
 router.get("/two-line-elements/:id",
   (req, res, next) => satelliteIdRouteValidation(req, res, next),
-  (req, res) => {
+  (req: RequestWithID, res) => {
     n2yo
-      .getTwoLineElements(req.params.id!)
+      .getTwoLineElements(req.params.id)
       .then((result) => res.json(result))
       .catch(() => res.sendStatus(400));
   });
 
 router.get("/satellite/by-id/:id",
-  (req, res, next) => satelliteIdRouteValidation(req, res, next),
-  (req, res) => {
+  satelliteIdRouteValidation,
+  (req: RequestWithID, res) => {
 
-    return SatelliteUtilities.getSatelliteById(req.params.id!)
+    return SatelliteUtilities.getSatelliteById(req.params.id)
       .then((satelliteDoc) => {
         if (!satelliteDoc) return res.sendStatus(400);
         return res.json(_.pick(satelliteDoc, PROPS_TO_SEND_IN_RESPOSNE));
@@ -42,9 +43,9 @@ router.get("/satellite/by-id/:id",
   })
 
 router.get("/satellite/by-name/:name",
-  (req, res, next) => satelliteNameRouteValidation(req, res, next),
-  (req, res) => {
-    return SatelliteUtilities.getSatelliteByName(req.params.name!)
+  satelliteNameRouteValidation,
+  (req: RequestWithName, res) => {
+    return SatelliteUtilities.getSatelliteByName(req.params.name)
       .then((satelliteDoc) => {
         if (!satelliteDoc) return res.sendStatus(400);
         const satellitesArray = <SatelliteResponseInterface[]>(
