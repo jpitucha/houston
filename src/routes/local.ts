@@ -1,11 +1,13 @@
-import express, { Request } from "express";
+import express from "express";
 import n2yo from "./../api/n2yo/index.js";
 import SatelliteUtilities from "../utils/satelliteUtils";
 import _ from "lodash";
 import SatelliteResponseInterface from '../utils/types/parialSatelliteInterface'
-import { assert, pattern, string } from 'superstruct'
+import { satelliteIdRouteValidation } from './../validators/satelliteIdValidator'
+import { satelliteNameRouteValidation } from './../validators/satelliteNameValidator'
 
 const router = express.Router();
+
 const PROPS_TO_SEND_IN_RESPOSNE = [
   "_id",
   "officialName",
@@ -15,25 +17,6 @@ const PROPS_TO_SEND_IN_RESPOSNE = [
   "operatorCountry",
   "purpose",
 ];
-
-const satelliteIdRouteValidation = (expressRequest: Request): boolean => {
-  const id = expressRequest.params.id
-  const idCheck = pattern(string(), /[0-9]+/)
-
-  if (!id) return false
-  try {
-    assert(id, idCheck)
-  } catch {
-    return false
-  }
-  return true
-}
-
-const satelliteNameRouteValidation = (expressRequest: Request): boolean => {
-  const name = expressRequest.params.officialName
-  if (!name) return false
-  return true
-}
 
 router.get("/two-line-elements/:id", (req, res) => {
   if (!satelliteIdRouteValidation(req)) return res.sendStatus(400)
