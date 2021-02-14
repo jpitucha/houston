@@ -3,9 +3,9 @@ import n2yo from "./../api/n2yo/index.js";
 import SatelliteUtilities from "../utils/satelliteUtils";
 import _ from "lodash";
 import SatelliteResponseInterface from '../utils/types/parialSatelliteInterface'
-import { satelliteIdRouteValidation } from './../validators/satelliteIdValidator'
-import { satelliteNameRouteValidation } from './../validators/satelliteNameValidator'
-import { RequestWithID, RequestWithName } from './../utils/types/extendedRequestInterface'
+import { validateSatelliteIdRoute } from './../validators/satelliteIdValidator'
+import { validateSatelliteNameRoute } from './../validators/satelliteNameValidator'
+import { GetTwoLineElementsRequest, GetSatelliteByIdRequest, GetSatelliteByNameRequest } from './../utils/types/extendedRequestInterface'
 
 const router = express.Router();
 
@@ -20,8 +20,8 @@ const PROPS_TO_SEND_IN_RESPOSNE = [
 ];
 
 router.get("/two-line-elements/:id",
-  (req, res, next) => satelliteIdRouteValidation(req, res, next),
-  (req: RequestWithID, res) => {
+  validateSatelliteIdRoute,
+  (req: GetTwoLineElementsRequest, res) => {
     n2yo
       .getTwoLineElements(req.params.id)
       .then((result) => res.json(result))
@@ -29,8 +29,8 @@ router.get("/two-line-elements/:id",
   });
 
 router.get("/satellite/by-id/:id",
-  satelliteIdRouteValidation,
-  (req: RequestWithID, res) => {
+  validateSatelliteIdRoute,
+  (req: GetSatelliteByIdRequest, res) => {
 
     return SatelliteUtilities.getSatelliteById(req.params.id)
       .then((satelliteDoc) => {
@@ -43,8 +43,8 @@ router.get("/satellite/by-id/:id",
   })
 
 router.get("/satellite/by-name/:name",
-  satelliteNameRouteValidation,
-  (req: RequestWithName, res) => {
+  validateSatelliteNameRoute,
+  (req: GetSatelliteByNameRequest, res) => {
     return SatelliteUtilities.getSatelliteByName(req.params.name)
       .then((satelliteDoc) => {
         if (!satelliteDoc) return res.sendStatus(400);

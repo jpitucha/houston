@@ -1,12 +1,18 @@
 import { Request } from 'express'
 
-export interface RequestWithID extends Request {
+export interface GetTwoLineElementsRequest extends Request {
     params: {
         id: string
     }
 }
 
-export interface RequestWithName extends Request {
+export interface GetSatelliteByIdRequest extends Request {
+    params: {
+        id: string
+    }
+}
+
+export interface GetSatelliteByNameRequest extends Request {
     params: {
         name: string
     }

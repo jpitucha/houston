@@ -1,6 +1,7 @@
-import { Request, Response, response } from 'express'
+import { Request, Response, response, NextFunction } from 'express'
 
-export const satelliteNameRouteValidation = (req: Request, res: Response, next: CallableFunction): void | ReturnType<typeof response.sendStatus> => {
+export const validateSatelliteNameRoute = (req: Request, res: Response, next: NextFunction):
+    ReturnType<NextFunction> | ReturnType<typeof response.sendStatus> => {
     const name = req.params.name
     if (!name) return res.sendStatus(400)
     return next()
