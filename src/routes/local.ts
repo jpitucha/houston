@@ -3,8 +3,6 @@ import n2yo from "./../api/n2yo/index.js";
 import SatelliteUtilities from "../utils/satelliteUtils";
 import _ from "lodash";
 import SatelliteResponseInterface from '../utils/types/parialSatelliteInterface'
-import { validateSatelliteIdRoute } from './../validators/satelliteIdValidator'
-import { validateSatelliteNameRoute } from './../validators/satelliteNameValidator'
 import { GetTwoLineElementsRequest, GetSatelliteByIdRequest, GetSatelliteByNameRequest } from './../utils/types/extendedRequestInterface'
 
 const router = express.Router();
@@ -20,7 +18,6 @@ const PROPS_TO_SEND_IN_RESPOSNE = [
 ];
 
 router.get("/two-line-elements",
-  validateSatelliteIdRoute,
   (req: GetTwoLineElementsRequest, res) => {
     n2yo
       .getTwoLineElements(req.query.id)
@@ -29,7 +26,6 @@ router.get("/two-line-elements",
   });
 
 router.get("/satellite/by-id",
-  validateSatelliteIdRoute,
   (req: GetSatelliteByIdRequest, res) => {
 
     return SatelliteUtilities.getSatelliteById(req.query.id)
@@ -43,7 +39,6 @@ router.get("/satellite/by-id",
   })
 
 router.get("/satellite/by-name",
-  validateSatelliteNameRoute,
   (req: GetSatelliteByNameRequest, res) => {
     return SatelliteUtilities.getSatelliteByName(req.query.name)
       .then((satelliteDoc) => {
