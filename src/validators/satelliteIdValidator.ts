@@ -5,7 +5,7 @@ export const validateSatelliteIdRoute = (req: Request, res: Response, next: Next
     ReturnType<NextFunction> | ReturnType<typeof response.sendStatus> => {
     const idCheck = pattern(string(), /[0-9]+/)
     try {
-        assert(req.params.id, idCheck)
+        assert(req.query.id, idCheck)
         return next()
     } catch {
         return res.sendStatus(400)

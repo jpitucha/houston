@@ -19,20 +19,20 @@ const PROPS_TO_SEND_IN_RESPOSNE = [
   "purpose",
 ];
 
-router.get("/two-line-elements/:id",
+router.get("/two-line-elements",
   validateSatelliteIdRoute,
   (req: GetTwoLineElementsRequest, res) => {
     n2yo
-      .getTwoLineElements(req.params.id)
+      .getTwoLineElements(req.query.id)
       .then((result) => res.json(result))
       .catch(() => res.sendStatus(400));
   });
 
-router.get("/satellite/by-id/:id",
+router.get("/satellite/by-id",
   validateSatelliteIdRoute,
   (req: GetSatelliteByIdRequest, res) => {
 
-    return SatelliteUtilities.getSatelliteById(req.params.id)
+    return SatelliteUtilities.getSatelliteById(req.query.id)
       .then((satelliteDoc) => {
         if (!satelliteDoc) return res.sendStatus(400);
         return res.json(_.pick(satelliteDoc, PROPS_TO_SEND_IN_RESPOSNE));
@@ -42,10 +42,10 @@ router.get("/satellite/by-id/:id",
       });
   })
 
-router.get("/satellite/by-name/:name",
+router.get("/satellite/by-name",
   validateSatelliteNameRoute,
   (req: GetSatelliteByNameRequest, res) => {
-    return SatelliteUtilities.getSatelliteByName(req.params.name)
+    return SatelliteUtilities.getSatelliteByName(req.query.name)
       .then((satelliteDoc) => {
         if (!satelliteDoc) return res.sendStatus(400);
         const satellitesArray = <SatelliteResponseInterface[]>(
