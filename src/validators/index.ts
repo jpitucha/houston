@@ -15,7 +15,6 @@ const validators: Record<string, typeof validateSatelliteIdRoute> = {
     '/satellite/by-name': validateSatelliteNameRoute
 }
 
-//ReturnType<typeof validateSatelliteIdRoute> | InvalidPathError
 export default (req: Request, res: Response, next: NextFunction): void => {
     const currentValidator = validators[req.path]
 
