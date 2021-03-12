@@ -3,8 +3,10 @@ import n2yo from "./../api/n2yo/index.js";
 import SatelliteUtilities from "../utils/satelliteUtils";
 import _ from "lodash";
 import SatelliteResponseInterface from '../utils/types/parialSatelliteInterface'
+import { GetTwoLineElementsRequest, GetSatelliteByIdRequest, GetSatelliteByNameRequest } from './../utils/types/extendedRequestInterface'
 
 const router = express.Router();
+
 const PROPS_TO_SEND_IN_RESPOSNE = [
   "_id",
   "officialName",
@@ -15,16 +17,17 @@ const PROPS_TO_SEND_IN_RESPOSNE = [
   "purpose",
 ];
 
-router.get("/two-line-elements/:id", (req, res) => {
-  if (req.params.id === undefined) return res.sendStatus(400);
-  n2yo
-    .getTwoLineElements(req.params.id)
-    .then((result) => res.json(result))
-    .catch(() => res.sendStatus(400));
-});
+router.get("/two-line-elements",
+  (req: GetTwoLineElementsRequest, res) => {
+    n2yo
+      .getTwoLineElements(req.query.id)
+      .then((result) => res.json(result))
+      .catch(() => res.sendStatus(400));
+  });
 
-router.get("/satellite", (req, res) => {
-  if (typeof req.query.id === "string") {
+router.get("/satellite/by-id",
+  (req: GetSatelliteByIdRequest, res) => {
+
     return SatelliteUtilities.getSatelliteById(req.query.id)
       .then((satelliteDoc) => {
         if (!satelliteDoc) return res.sendStatus(400);
@@ -33,8 +36,10 @@ router.get("/satellite", (req, res) => {
       .catch(() => {
         return res.sendStatus(400);
       });
-  }
-  if (typeof req.query.name === "string") {
+  })
+
+router.get("/satellite/by-name",
+  (req: GetSatelliteByNameRequest, res) => {
     return SatelliteUtilities.getSatelliteByName(req.query.name)
       .then((satelliteDoc) => {
         if (!satelliteDoc) return res.sendStatus(400);
@@ -48,8 +53,6 @@ router.get("/satellite", (req, res) => {
       .catch(() => {
         return res.sendStatus(400);
       });
-  }
-  res.sendStatus(400);
-});
+  })
 
 export default router;
