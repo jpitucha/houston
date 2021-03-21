@@ -1,8 +1,7 @@
-import { Request, Response, response, NextFunction } from 'express'
+import { Request } from 'express'
 
-export const validateSatelliteNameRoute = (req: Request, res: Response, next: NextFunction):
-    ReturnType<NextFunction> | ReturnType<typeof response.sendStatus> => {
+export const validateSatelliteNameRoute = (req: Request): boolean => {
     const name = req.query.name
-    if (!name) return res.sendStatus(400)
-    return next()
+    if (!name) return false
+    return true
 }
