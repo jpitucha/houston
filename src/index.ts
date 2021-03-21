@@ -6,7 +6,7 @@ import dbConnectionProvider from './db/dbConnectionProvider'
 import Utilities from './utils/utils'
 import SatelliteUtilities from './utils/satelliteUtils'
 import satelliteRouteValidation from './validators'
-import errMiddleware from './validators'
+import errMiddleware from './errors'
 
 dotenv.config()
 
