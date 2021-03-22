@@ -6,6 +6,7 @@ import dbConnectionProvider from './db/dbConnectionProvider'
 import Utilities from './utils/utils'
 import SatelliteUtilities from './utils/satelliteUtils'
 import satelliteRouteValidation from './validators'
+import errMiddleware from './middleware'
 
 dotenv.config()
 
@@ -31,6 +32,7 @@ const app = express()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use('/', satelliteRouteValidation, routes)
+app.use(errMiddleware)
 app.listen(process.env.PORT, () => {
     console.log(`Houston running at http://localhost:${process.env.PORT}`)
 })

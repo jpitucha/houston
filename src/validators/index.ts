@@ -1,13 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { validateSatelliteIdRoute } from './satelliteIdValidator'
 import { validateSatelliteNameRoute } from './satelliteNameValidator'
-
-class InvalidPathError extends Error {
-    constructor(message: string) {
-        super(message)
-        this.name = 'InvalidPathError'
-    }
-}
+import { InvalidPathError, ValidationFailedError } from './../errors'
 
 const validators: Record<string, typeof validateSatelliteIdRoute> = {
     '/two-line-elements': validateSatelliteIdRoute,
@@ -15,9 +9,10 @@ const validators: Record<string, typeof validateSatelliteIdRoute> = {
     '/satellite/by-name': validateSatelliteNameRoute
 }
 
-export default (req: Request, res: Response, next: NextFunction): void => {
+export default (req: Request, _res: Response, next: NextFunction): ReturnType<NextFunction> => {
     const currentValidator = validators[req.path]
 
-    if (currentValidator) return currentValidator(req, res, next)
-    throw new InvalidPathError('Invalid Path')
+    if (!currentValidator) throw new InvalidPathError('Invalid Path')
+    if (!currentValidator(req)) throw new ValidationFailedError('Validation Failed')
+    return next()
 }

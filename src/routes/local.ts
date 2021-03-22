@@ -27,7 +27,6 @@ router.get("/two-line-elements",
 
 router.get("/satellite/by-id",
   (req: GetSatelliteByIdRequest, res) => {
-
     return SatelliteUtilities.getSatelliteById(req.query.id)
       .then((satelliteDoc) => {
         if (!satelliteDoc) return res.sendStatus(400);
