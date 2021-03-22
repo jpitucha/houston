@@ -1,9 +1,13 @@
-import { Request, Response, NextFunction } from 'express'
-import { ValidationFailedError, InvalidPathError } from './../validators'
+export class InvalidPathError extends Error {
+    constructor(message: string) {
+        super(message)
+        this.name = 'InvalidPathError'
+    }
+}
 
-export default (err: Error, _req: Request, res: Response, _next: NextFunction): void => {
-    let statusCode = 500
-    const message = err.message || 'Something went wrong'
-    if (err instanceof ValidationFailedError || InvalidPathError) statusCode = 400
-    res.status(statusCode).send({ statusCode, message })
+export class ValidationFailedError extends Error {
+    constructor(message: string) {
+        super(message)
+        this.name = 'ValidationFailedError'
+    }
 }
