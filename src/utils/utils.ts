@@ -1,4 +1,5 @@
 import * as fs from 'fs'
+import { create, number, coerce, string } from 'superstruct'
 import SatelliteUtilities from './satelliteUtils'
 import SatelliteInterface from './types/satelliteInterface'
 
@@ -7,13 +8,14 @@ export default class Utilities {
     static satelliteHeaders = [
         'nameOfSatellite',
         'officialName',
-        'UnRegistryCountry',
+        'unRegistryCountry',
         'operatorCountry',
         'operator',
         'users',
         'purpose',
         'detailedPurpose',
         'classOfOrbit',
+        'typeOfOrbit',
         'longitudeOfGeo',
         'perigee',
         'apogee',
@@ -45,29 +47,15 @@ export default class Utilities {
         return true
     }
 
-    static getSatelitesFromFile(): Array<string[]> {
-        const data = fs.readFileSync('./ucs-satelite-db.txt', 'utf8')
+    static getSatelitesFromFile(): Array<Record<string, unknown>> {
+        const data = fs.readFileSync('./satellites-db.json', 'utf8')
         if (!data) return []
-        const satelites = data.split('\n').slice(1)
-        const usableDataMaxIndex = this.satelliteHeaders.length
-        const splittedSatelitesData: Array<string[]> = []
-        satelites.forEach((value) => { splittedSatelitesData.push(value.split('\t').slice(0, usableDataMaxIndex)) })
-        return splittedSatelitesData.slice(0, splittedSatelitesData.length - 1)
+        console.log(data)
+        return JSON.parse(data)
     }
 
     static countSatelitesFromFile(): number {
-        const data = fs.readFileSync('./ucs-satelite-db.txt', 'utf8')
-        if (!data) return 0
-        return data.split('\n').length - 2
-    }
-
-    static prePopulateDatabase(satellites: SatelliteInterface[]): Promise<SatelliteInterface[]> {
-        const satellitesCreation: Promise<SatelliteInterface>[] = []
-        satellites.forEach((satellite) => {
-            satellitesCreation.push(SatelliteUtilities.createSatelite(satellite as SatelliteInterface))
-        })
-
-        return Promise.all(satellitesCreation)
+        return this.getSatelitesFromFile().length as number
     }
 
     static checkSatellitesPropsReliability(): {
@@ -80,8 +68,33 @@ export default class Utilities {
             [P in SatelliteField]: string | number
         }
         const satellitesFromFile = this.getSatelitesFromFile()
+        //const s = satellitesFromFile[0]
+        //console.log(Object.keys(s || {}))
 
-        const satellitesCreation = satellitesFromFile.map((satellite) => {
+        const myNumber = coerce(number(), string(), (value) => parseFloat(value))
+
+        const validatedSatellites = satellitesFromFile.filter(element => {
+            try {
+                create(element.longitudeOfGeo ?? '0', myNumber)
+                create(element.perigee ?? '0', myNumber)
+                create(element.apogee ?? '0', myNumber)
+                create(element.inclination ?? '0', myNumber)
+                create(element.period ?? '0', myNumber)
+                create(element.launchMass ?? '0', myNumber)
+                create(element.dryMass ?? '0', myNumber)
+                create(element.power ?? '0', myNumber)
+                create(element.expectedLifetime ?? '0', myNumber)
+                create(element.cospar ?? '0', myNumber)
+                create(element.norad ?? '0', myNumber)
+            } catch {
+                return false
+            }
+            return true
+        })
+
+        console.log(validatedSatellites)
+
+        const satellitesCreation = Object.keys(satellitesFromFile).map((satellite) => {
             const constructedSatellite = headings.reduce((accumulator, heading, index) => {
                 accumulator[heading] = satellite[index] ?? ''
                 return accumulator
@@ -112,6 +125,15 @@ export default class Utilities {
             completeSatellites,
             incompleteSatellites
         }
+    }
+
+    static prePopulateDatabase(satellites: SatelliteInterface[]): Promise<SatelliteInterface[]> {
+        const satellitesCreation: Promise<SatelliteInterface>[] = []
+        satellites.forEach((satellite) => {
+            satellitesCreation.push(SatelliteUtilities.createSatelite(satellite as SatelliteInterface))
+        })
+
+        return Promise.all(satellitesCreation)
     }
 
 }
