@@ -29,3 +29,4 @@ export default interface SatelliteInterface {
 }
 
 export type keys = keyof SatelliteInterface
+export type arrayOfSatellites = Record<string, string | number>[]
