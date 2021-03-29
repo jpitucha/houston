@@ -2,6 +2,7 @@ import * as fs from 'fs'
 import { create, number, coerce, string } from 'superstruct'
 import SatelliteUtilities from './satelliteUtils'
 import SatelliteInterface from './types/satelliteInterface'
+import { arrayOfSatellites } from './types/satelliteInterface'
 
 export default class Utilities {
 
@@ -47,7 +48,7 @@ export default class Utilities {
         return true
     }
 
-    static getSatelitesFromFile(): Array<Record<string, unknown>> {
+    static getSatelitesFromFile(): arrayOfSatellites {
         const data = fs.readFileSync('./satellites-db.json', 'utf8')
         if (!data) return []
         console.log(data)
@@ -56,6 +57,35 @@ export default class Utilities {
 
     static countSatelitesFromFile(): number {
         return this.getSatelitesFromFile().length as number
+    }
+
+    static correctSatellitesData(satellites: arrayOfSatellites): arrayOfSatellites {
+
+        const propsToCheck: string[] = [
+            'longitudeOfGeo',
+            'perigee',
+            'apogee',
+            'inclination',
+            'period',
+            'launchMass',
+            'dryMass',
+            'power',
+            'expectedLifetime',
+            'cospar',
+            'norad'
+        ]
+
+        return satellites.map((item) => {
+            propsToCheck.forEach((property) => {
+                let value = item[property]
+                if (value) {
+                    value = parseInt(value.toString().replace(',', '.'))
+                    return
+                }
+                value = 0
+            })
+            return item
+        })
     }
 
     static checkSatellitesPropsReliability(): {
@@ -71,7 +101,9 @@ export default class Utilities {
         //const s = satellitesFromFile[0]
         //console.log(Object.keys(s || {}))
 
-        const myNumber = coerce(number(), string(), (value) => parseFloat(value))
+        this.correctSatellitesData(satellitesFromFile)
+
+        const myNumber = coerce(number(), string(), (value) => parseFloat(value.replace(',', '.')))
 
         const validatedSatellites = satellitesFromFile.filter(element => {
             try {
@@ -93,6 +125,8 @@ export default class Utilities {
         })
 
         console.log(validatedSatellites)
+
+
 
         const satellitesCreation = Object.keys(satellitesFromFile).map((satellite) => {
             const constructedSatellite = headings.reduce((accumulator, heading, index) => {
