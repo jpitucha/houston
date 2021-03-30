@@ -1,5 +1,5 @@
 import * as fs from 'fs'
-import { create, number, coerce, string } from 'superstruct'
+import { create, number } from 'superstruct'
 import SatelliteUtilities from './satelliteUtils'
 import SatelliteInterface from './types/satelliteInterface'
 import { arrayOfSatellites } from './types/satelliteInterface'
@@ -98,32 +98,27 @@ export default class Utilities {
             [P in SatelliteField]: string | number
         }
         const satellitesFromFile = this.getSatelitesFromFile()
-        //const s = satellitesFromFile[0]
-        //console.log(Object.keys(s || {}))
-
-        this.correctSatellitesData(satellitesFromFile)
-
-        const myNumber = coerce(number(), string(), (value) => parseFloat(value.replace(',', '.')))
-
-        const validatedSatellites = satellitesFromFile.filter(element => {
+        const preprocessedSatellites = this.correctSatellitesData(satellitesFromFile)
+        const validatedSatellites = preprocessedSatellites.filter(element => {
             try {
-                create(element.longitudeOfGeo ?? '0', myNumber)
-                create(element.perigee ?? '0', myNumber)
-                create(element.apogee ?? '0', myNumber)
-                create(element.inclination ?? '0', myNumber)
-                create(element.period ?? '0', myNumber)
-                create(element.launchMass ?? '0', myNumber)
-                create(element.dryMass ?? '0', myNumber)
-                create(element.power ?? '0', myNumber)
-                create(element.expectedLifetime ?? '0', myNumber)
-                create(element.cospar ?? '0', myNumber)
-                create(element.norad ?? '0', myNumber)
+                create(element.longitudeOfGeo, number())
+                create(element.perigee, number())
+                create(element.apogee, number())
+                create(element.inclination, number())
+                create(element.period, number())
+                create(element.launchMass, number())
+                create(element.dryMass, number())
+                create(element.power, number())
+                create(element.expectedLifetime, number())
+                create(element.cospar, number())
+                create(element.norad, number())
             } catch {
                 return false
             }
             return true
         })
 
+        console.log(preprocessedSatellites)
         console.log(validatedSatellites)
 
 
