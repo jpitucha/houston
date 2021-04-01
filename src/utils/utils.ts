@@ -1,8 +1,8 @@
 import * as fs from 'fs'
-import { create, number } from 'superstruct'
+import { create, number, coerce, string } from 'superstruct'
 import SatelliteUtilities from './satelliteUtils'
 import SatelliteInterface from './types/satelliteInterface'
-import { arrayOfSatellites } from './types/satelliteInterface'
+import { arrayOfSatellites } from './types/parialSatelliteInterface'
 
 export default class Utilities {
 
@@ -51,7 +51,6 @@ export default class Utilities {
     static getSatelitesFromFile(): arrayOfSatellites {
         const data = fs.readFileSync('./satellites-db.json', 'utf8')
         if (!data) return []
-        console.log(data)
         return JSON.parse(data)
     }
 
@@ -59,7 +58,7 @@ export default class Utilities {
         return this.getSatelitesFromFile().length as number
     }
 
-    static correctSatellitesData(satellites: arrayOfSatellites): arrayOfSatellites {
+    static standardizeSatellitesData(satellites: Record<string, string | number>[]): arrayOfSatellites {
 
         const propsToCheck: string[] = [
             'longitudeOfGeo',
@@ -75,7 +74,16 @@ export default class Utilities {
             'norad'
         ]
 
-        return satellites.map((item) => {
+        const standarizedSatellites: arrayOfSatellites = satellites.map((item) => {
+            const currentKeys = Object.keys(item)
+            const propertyDiff = this.satelliteHeaders.filter((item) => !currentKeys.includes(item))
+            propertyDiff.forEach((property) => {
+                item[property] = ''
+            })
+            return item
+        })
+
+        return standarizedSatellites.map((item) => {
             propsToCheck.forEach((property) => {
                 let value = item[property]
                 if (value) {
@@ -98,30 +106,32 @@ export default class Utilities {
             [P in SatelliteField]: string | number
         }
         const satellitesFromFile = this.getSatelitesFromFile()
-        const preprocessedSatellites = this.correctSatellitesData(satellitesFromFile)
+        const preprocessedSatellites = this.standardizeSatellitesData(satellitesFromFile)
+
+        const numFromStr = coerce(number(), string(), (value) => parseFloat(value))
+
         const validatedSatellites = preprocessedSatellites.filter(element => {
             try {
-                create(element.longitudeOfGeo, number())
-                create(element.perigee, number())
-                create(element.apogee, number())
-                create(element.inclination, number())
-                create(element.period, number())
-                create(element.launchMass, number())
-                create(element.dryMass, number())
-                create(element.power, number())
-                create(element.expectedLifetime, number())
-                create(element.cospar, number())
-                create(element.norad, number())
-            } catch {
+                create(element.longitudeOfGeo, numFromStr)
+                create(element.perigee, numFromStr)
+                create(element.apogee, numFromStr)
+                create(element.inclination, numFromStr)
+                create(element.period, numFromStr)
+                create(element.launchMass, numFromStr)
+                create(element.dryMass, numFromStr)
+                create(element.power, numFromStr)
+                create(element.expectedLifetime, numFromStr)
+                create(element.cospar, numFromStr)
+                create(element.norad, numFromStr)
+            } catch (e) {
+                console.log(e)
                 return false
             }
             return true
         })
 
-        console.log(preprocessedSatellites)
-        console.log(validatedSatellites)
-
-
+        console.log("validated")
+        console.log(validatedSatellites.length)
 
         const satellitesCreation = Object.keys(satellitesFromFile).map((satellite) => {
             const constructedSatellite = headings.reduce((accumulator, heading, index) => {
