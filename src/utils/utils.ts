@@ -96,17 +96,27 @@ export default class Utilities {
         })
     }
 
-    static checkSatellitesPropsReliability(): {
-        completeSatellites: SatelliteInterface[],
-        incompleteSatellites: SatelliteInterface[]
-    } {
-        const headings = this.satelliteHeaders
-        type SatelliteField = typeof headings[number]
-        type ConstructedSatellite = {
-            [P in SatelliteField]: string | number
-        }
+    static checkSatellitesPropsReliability(): SatelliteInterface[] {
         const satellitesFromFile = this.getSatelitesFromFile()
-        const preprocessedSatellites = this.standardizeSatellitesData(satellitesFromFile)
+
+        const requiredFields: string[] = [
+            "officialName",
+            "perigee",
+            "apogee",
+            "operator",
+            "operatorCountry",
+            "purpose"
+        ]
+
+        const satellitesWithRequiredFields = satellitesFromFile.filter((item) => {
+            const currentKeys = Object.keys(item)
+            let includesAllFields = true
+            requiredFields.forEach((item) => {
+                if (!currentKeys.includes(item)) includesAllFields = false
+            })
+            return includesAllFields
+        })
+        const preprocessedSatellites = this.standardizeSatellitesData(satellitesWithRequiredFields)
 
         const numFromStr = coerce(number(), string(), (value) => parseFloat(value))
 
@@ -123,47 +133,13 @@ export default class Utilities {
                 create(element.expectedLifetime, numFromStr)
                 create(element.cospar, numFromStr)
                 create(element.norad, numFromStr)
-            } catch (e) {
-                console.log(e)
+            } catch {
                 return false
             }
             return true
         })
 
-        console.log("validated")
-        console.log(validatedSatellites.length)
-
-        const satellitesCreation = Object.keys(satellitesFromFile).map((satellite) => {
-            const constructedSatellite = headings.reduce((accumulator, heading, index) => {
-                accumulator[heading] = satellite[index] ?? ''
-                return accumulator
-            }, {} as ConstructedSatellite)
-            return constructedSatellite as SatelliteInterface
-        })
-
-        const completeSatellites: SatelliteInterface[] = []
-        const incompleteSatellites: SatelliteInterface[] = []
-
-        const requiredFields: string[] = [
-            "officialName",
-            "perigee",
-            "apogee",
-            "operator",
-            "operatorCountry",
-            "purpose"
-        ]
-
-        satellitesCreation.forEach((value) => {
-            if (Object.entries(value).some(propertyAndValue => requiredFields.includes(propertyAndValue[0]) && propertyAndValue[1] === '')) {
-                return incompleteSatellites.push(value)
-            }
-            completeSatellites.push(value)
-        })
-
-        return {
-            completeSatellites,
-            incompleteSatellites
-        }
+        return validatedSatellites
     }
 
     static prePopulateDatabase(satellites: SatelliteInterface[]): Promise<SatelliteInterface[]> {
