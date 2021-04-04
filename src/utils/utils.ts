@@ -74,24 +74,32 @@ export default class Utilities {
             'norad'
         ]
 
-        return satellites.map((item) => {
-            const currentKeys = Object.keys(item)
-            const propertyDiff = this.satelliteHeaders.filter((item) => !currentKeys.includes(item))
-            propertyDiff.forEach((property) => {
-                item[property] = ''
+        const addMissingProps = (satellitesList: UnprocessedSatellites) => {
+            return satellitesList.map((item) => {
+                const currentKeys = Object.keys(item)
+                const missigPropertiesList = this.satelliteHeaders.filter((item) => !currentKeys.includes(item))
+                missigPropertiesList.forEach((property) => {
+                    item[property] = ''
+                })
+                return item
             })
-            return item
-        }).map((item) => {
-            propsToCheck.forEach((property) => {
-                if (!item[property]) {
-                    item[property] = 0
-                } else {
-                    const value = item[property]?.toString() || '0'
-                    item[property] = parseFloat(value.replace(',', '.'))
-                }
-            })
-            return item
-        }) as SatelliteType[]
+        }
+
+        const replaceCommasWithDots = (unprocessedSatellitesList: UnprocessedSatellites) => {
+            return unprocessedSatellitesList.map((item) => {
+                propsToCheck.forEach((property) => {
+                    if (!item[property]) {
+                        item[property] = 0
+                    } else {
+                        const value = item[property]?.toString() || '0'
+                        item[property] = parseFloat(value.replace(',', '.'))
+                    }
+                })
+                return item
+            }) as SatelliteType[]
+        }
+
+        return replaceCommasWithDots(addMissingProps(satellites))
     }
 
     static checkSatellitesPropsReliability(): SatelliteType[] {
