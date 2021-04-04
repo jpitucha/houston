@@ -60,13 +60,13 @@ export default class Utilities {
 
     static standardizeSatellitesData(satellites: arrayOfSatellites): SatelliteType[] {
 
-        const standarizedSatellites: SatelliteType[] = satellites.map((item) => {
+        const standarizedSatellites: arrayOfSatellites = satellites.map((item) => {
             const currentKeys = Object.keys(item)
             const propertyDiff = this.satelliteHeaders.filter((item) => !currentKeys.includes(item))
             propertyDiff.forEach((property) => {
                 item[property] = ''
             })
-            return item as SatelliteType
+            return item
         })
 
         const propsToCheck: SatelliteKeys[] = [
@@ -85,15 +85,15 @@ export default class Utilities {
 
         return standarizedSatellites.map((item) => {
             propsToCheck.forEach((property) => {
-                let value = item[property]
-                if (value) {
-                    value = parseFloat(value.toString().replace(',', '.'))
-                    return
+                if (!item[property]) {
+                    item[property] = 0
+                } else {
+                    const value = item[property]?.toString() || '0'
+                    item[property] = parseFloat(value.replace(',', '.'))
                 }
-                value = 0
             })
             return item
-        })
+        }) as SatelliteType[]
     }
 
     static checkSatellitesPropsReliability(): SatelliteType[] {

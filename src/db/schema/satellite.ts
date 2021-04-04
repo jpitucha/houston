@@ -3,7 +3,7 @@ import { SatelliteType } from '../../utils/types/satelliteType'
 import fuzzySearching from "mongoose-fuzzy-searching";
 
 const schemaObj = {
-    nameOfSatellite: { type: String, required: true, unique: true },
+    nameOfSatellite: { type: String, required: true },
     officialName: { type: String },
     UnRegistryCountry: { type: String },
     operatorCountry: { type: String },
