@@ -1,4 +1,4 @@
-export default interface SatelliteInterface {
+export type SatelliteType = {
     nameOfSatellite: string,
     officialName: string,
     unRegistryCountry: string,
@@ -28,4 +28,4 @@ export default interface SatelliteInterface {
     norad: number
 }
 
-export type keys = keyof SatelliteInterface
+export type SatelliteKeys = keyof SatelliteType

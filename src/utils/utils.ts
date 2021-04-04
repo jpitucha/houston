@@ -1,7 +1,7 @@
 import * as fs from 'fs'
 import { create, number, coerce, string } from 'superstruct'
 import SatelliteUtilities from './satelliteUtils'
-import SatelliteInterface from './types/satelliteInterface'
+import { SatelliteType, SatelliteKeys } from './types/satelliteType'
 import { arrayOfSatellites } from './types/parialSatelliteInterface'
 
 export default class Utilities {
@@ -58,9 +58,18 @@ export default class Utilities {
         return this.getSatelitesFromFile().length as number
     }
 
-    static standardizeSatellitesData(satellites: Record<string, string | number>[]): arrayOfSatellites {
+    static standardizeSatellitesData(satellites: arrayOfSatellites): SatelliteType[] {
 
-        const propsToCheck: string[] = [
+        const standarizedSatellites: SatelliteType[] = satellites.map((item) => {
+            const currentKeys = Object.keys(item)
+            const propertyDiff = this.satelliteHeaders.filter((item) => !currentKeys.includes(item))
+            propertyDiff.forEach((property) => {
+                item[property] = ''
+            })
+            return item as SatelliteType
+        })
+
+        const propsToCheck: SatelliteKeys[] = [
             'longitudeOfGeo',
             'perigee',
             'apogee',
@@ -74,20 +83,11 @@ export default class Utilities {
             'norad'
         ]
 
-        const standarizedSatellites: arrayOfSatellites = satellites.map((item) => {
-            const currentKeys = Object.keys(item)
-            const propertyDiff = this.satelliteHeaders.filter((item) => !currentKeys.includes(item))
-            propertyDiff.forEach((property) => {
-                item[property] = ''
-            })
-            return item
-        })
-
         return standarizedSatellites.map((item) => {
             propsToCheck.forEach((property) => {
                 let value = item[property]
                 if (value) {
-                    value = parseInt(value.toString().replace(',', '.'))
+                    value = parseFloat(value.toString().replace(',', '.'))
                     return
                 }
                 value = 0
@@ -96,7 +96,7 @@ export default class Utilities {
         })
     }
 
-    static checkSatellitesPropsReliability(): SatelliteInterface[] {
+    static checkSatellitesPropsReliability(): SatelliteType[] {
         const satellitesFromFile = this.getSatelitesFromFile()
 
         const requiredFields: string[] = [
@@ -116,11 +116,12 @@ export default class Utilities {
             })
             return includesAllFields
         })
-        const preprocessedSatellites = this.standardizeSatellitesData(satellitesWithRequiredFields)
+
+        const standardizedSatellites = this.standardizeSatellitesData(satellitesWithRequiredFields)
 
         const numFromStr = coerce(number(), string(), (value) => parseFloat(value))
 
-        const validatedSatellites = preprocessedSatellites.filter(element => {
+        const validatedSatellites = standardizedSatellites.filter(element => {
             try {
                 create(element.longitudeOfGeo, numFromStr)
                 create(element.perigee, numFromStr)
@@ -142,10 +143,10 @@ export default class Utilities {
         return validatedSatellites
     }
 
-    static prePopulateDatabase(satellites: SatelliteInterface[]): Promise<SatelliteInterface[]> {
-        const satellitesCreation: Promise<SatelliteInterface>[] = []
+    static prePopulateDatabase(satellites: SatelliteType[]): Promise<SatelliteType[]> {
+        const satellitesCreation: Promise<SatelliteType>[] = []
         satellites.forEach((satellite) => {
-            satellitesCreation.push(SatelliteUtilities.createSatelite(satellite as SatelliteInterface))
+            satellitesCreation.push(SatelliteUtilities.createSatelite(satellite as SatelliteType))
         })
 
         return Promise.all(satellitesCreation)

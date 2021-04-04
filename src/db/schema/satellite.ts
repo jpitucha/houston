@@ -1,5 +1,5 @@
 import mongoose, { Document } from 'mongoose'
-import SatelliteInterface from '../../utils/types/satelliteInterface'
+import { SatelliteType } from '../../utils/types/satelliteType'
 import fuzzySearching from "mongoose-fuzzy-searching";
 
 const schemaObj = {
@@ -31,11 +31,11 @@ const schemaObj = {
     norad: { type: String }
 }
 
-type SatelliteDocument = Document & SatelliteInterface
+type SatelliteDocument = Document & SatelliteType
 
 const sateliteSchema = new mongoose.Schema({ ...schemaObj })
 
-sateliteSchema.plugin(fuzzySearching, { fields: [ 'officialName' ] })
+sateliteSchema.plugin(fuzzySearching, { fields: ['officialName'] })
 
 const Satellite = mongoose.model<SatelliteDocument>('satellite', sateliteSchema)
 

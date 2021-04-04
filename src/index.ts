@@ -22,7 +22,7 @@ const prepareDatabase = async (): Promise<void> => {
     if (countDbSats < countFileSats) SatelliteUtilities.removeCollectionIfExists()
         .then(() => {
             const verifiedSatellites = Utilities.checkSatellitesPropsReliability()
-            Utilities.prePopulateDatabase(verifiedSatellites.completeSatellites)
+            Utilities.prePopulateDatabase(verifiedSatellites)
         })
 }
 

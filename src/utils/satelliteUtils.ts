@@ -1,9 +1,9 @@
 import { Satellite } from './../db/schema/satellite'
-import SatelliteInterface from '../utils/types/satelliteInterface'
-import SatelliteDocument from '../utils/types/satelliteInterface'
+import { SatelliteType } from './types/satelliteType'
+import { SatelliteDocument } from './../db/schema/satellite'
 
 export default class SatelliteUtilities {
-    static async createSatelite(newSatelite: SatelliteInterface): Promise<SatelliteDocument> {
+    static async createSatelite(newSatelite: SatelliteType): Promise<SatelliteDocument> {
         return Satellite.create(newSatelite)
     }
 
