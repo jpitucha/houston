@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import { create, number, coerce, string } from 'superstruct'
 import SatelliteUtilities from './satelliteUtils'
 import { SatelliteType, SatelliteKeys } from './types/satelliteType'
-import { arrayOfSatellites } from './types/parialSatelliteInterface'
+import { UnprocessedSatellites } from './types/parialSatelliteInterface'
 
 export default class Utilities {
 
@@ -48,7 +48,7 @@ export default class Utilities {
         return true
     }
 
-    static getSatelitesFromFile(): arrayOfSatellites {
+    static getSatelitesFromFile(): UnprocessedSatellites {
         const data = fs.readFileSync('./satellites-db.json', 'utf8')
         if (!data) return []
         return JSON.parse(data)
@@ -58,16 +58,7 @@ export default class Utilities {
         return this.getSatelitesFromFile().length as number
     }
 
-    static standardizeSatellitesData(satellites: arrayOfSatellites): SatelliteType[] {
-
-        const standarizedSatellites: arrayOfSatellites = satellites.map((item) => {
-            const currentKeys = Object.keys(item)
-            const propertyDiff = this.satelliteHeaders.filter((item) => !currentKeys.includes(item))
-            propertyDiff.forEach((property) => {
-                item[property] = ''
-            })
-            return item
-        })
+    static standardizeSatellitesData(satellites: UnprocessedSatellites): SatelliteType[] {
 
         const propsToCheck: SatelliteKeys[] = [
             'longitudeOfGeo',
@@ -83,7 +74,14 @@ export default class Utilities {
             'norad'
         ]
 
-        return standarizedSatellites.map((item) => {
+        return satellites.map((item) => {
+            const currentKeys = Object.keys(item)
+            const propertyDiff = this.satelliteHeaders.filter((item) => !currentKeys.includes(item))
+            propertyDiff.forEach((property) => {
+                item[property] = ''
+            })
+            return item
+        }).map((item) => {
             propsToCheck.forEach((property) => {
                 if (!item[property]) {
                     item[property] = 0
@@ -110,11 +108,7 @@ export default class Utilities {
 
         const satellitesWithRequiredFields = satellitesFromFile.filter((item) => {
             const currentKeys = Object.keys(item)
-            let includesAllFields = true
-            requiredFields.forEach((item) => {
-                if (!currentKeys.includes(item)) includesAllFields = false
-            })
-            return includesAllFields
+            return requiredFields.every(item => currentKeys.includes(item))
         })
 
         const standardizedSatellites = this.standardizeSatellitesData(satellitesWithRequiredFields)

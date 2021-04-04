@@ -7,4 +7,4 @@ export default interface SatelliteResponseInterface {
     purpose: string
 }
 
-export type arrayOfSatellites = Record<string, string | number>[]
+export type UnprocessedSatellites = Record<string, string | number>[]
