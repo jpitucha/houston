@@ -58,8 +58,18 @@ export default class Utilities {
         return this.getSatelitesFromFile().length as number
     }
 
-    static standardizeSatellitesData(satellites: UnprocessedSatellites): SatelliteType[] {
+    static addMissingProps(satellitesList: UnprocessedSatellites): UnprocessedSatellites {
+        return satellitesList.map((item) => {
+            const currentKeys = Object.keys(item)
+            const missigPropertiesList = this.satelliteHeaders.filter((item) => !currentKeys.includes(item))
+            missigPropertiesList.forEach((property) => {
+                item[property] = ''
+            })
+            return item
+        })
+    }
 
+    static replaceCommasWithDots(unprocessedSatellitesList: UnprocessedSatellites): SatelliteType[] {
         const propsToCheck: SatelliteKeys[] = [
             'longitudeOfGeo',
             'perigee',
@@ -74,32 +84,17 @@ export default class Utilities {
             'norad'
         ]
 
-        const addMissingProps = (satellitesList: UnprocessedSatellites) => {
-            return satellitesList.map((item) => {
-                const currentKeys = Object.keys(item)
-                const missigPropertiesList = this.satelliteHeaders.filter((item) => !currentKeys.includes(item))
-                missigPropertiesList.forEach((property) => {
-                    item[property] = ''
-                })
-                return item
+        return unprocessedSatellitesList.map((item) => {
+            propsToCheck.forEach((property) => {
+                const value = item[property]?.toString() || ''
+                item[property] = parseFloat(value.replace(',', '.'))
             })
-        }
+            return item
+        }) as SatelliteType[]
+    }
 
-        const replaceCommasWithDots = (unprocessedSatellitesList: UnprocessedSatellites) => {
-            return unprocessedSatellitesList.map((item) => {
-                propsToCheck.forEach((property) => {
-                    if (!item[property]) {
-                        item[property] = 0
-                    } else {
-                        const value = item[property]?.toString() || '0'
-                        item[property] = parseFloat(value.replace(',', '.'))
-                    }
-                })
-                return item
-            }) as SatelliteType[]
-        }
-
-        return replaceCommasWithDots(addMissingProps(satellites))
+    static standardizeSatellitesData(satellites: UnprocessedSatellites): SatelliteType[] {
+        return this.replaceCommasWithDots(this.addMissingProps(satellites))
     }
 
     static checkSatellitesPropsReliability(): SatelliteType[] {
@@ -146,9 +141,8 @@ export default class Utilities {
     }
 
     static prePopulateDatabase(satellites: SatelliteType[]): Promise<SatelliteType[]> {
-        const satellitesCreation: Promise<SatelliteType>[] = []
-        satellites.forEach((satellite) => {
-            satellitesCreation.push(SatelliteUtilities.createSatelite(satellite as SatelliteType))
+        const satellitesCreation: Promise<SatelliteType>[] = satellites.map((satellite) => {
+            return SatelliteUtilities.createSatelite(satellite as SatelliteType)
         })
 
         return Promise.all(satellitesCreation)
