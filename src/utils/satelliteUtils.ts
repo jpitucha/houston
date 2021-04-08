@@ -23,7 +23,7 @@ export default class SatelliteUtilities {
         return Satellite.countDocuments().exec()
     }
 
-    static removeCollectionIfExists(): Promise<void> {
+    static removeCollectionIfExists() {
         return Satellite.deleteMany({}).exec()
     }
 
