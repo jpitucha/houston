@@ -108,4 +108,4 @@ build
 database
 
 #VS Code config files
-.vscode/
+.vscode/*
