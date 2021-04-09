@@ -1,13 +1,14 @@
-export default interface SatelliteInterface {
+export type SatelliteType = {
     nameOfSatellite: string,
     officialName: string,
-    UnRegistryCountry: string,
+    unRegistryCountry: string,
     operatorCountry: string,
     operator: string,
     users: string,
     purpose: string,
     detailedPurpose: string,
     classOfOrbit: string,
+    typeOfOrbit: string,
     longitudeOfGeo: number,
     perigee: number,
     apogee: number,
@@ -27,4 +28,4 @@ export default interface SatelliteInterface {
     norad: number
 }
 
-export type keys = keyof SatelliteInterface
+export type SatelliteKeys = keyof SatelliteType

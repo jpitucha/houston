@@ -6,3 +6,5 @@ export default interface SatelliteResponseInterface {
     operator: string,
     purpose: string
 }
+
+export type UnprocessedSatellites = Record<string, string | number>[]

@@ -1,19 +1,22 @@
 import * as fs from 'fs'
+import { create, number, coerce, string } from 'superstruct'
 import SatelliteUtilities from './satelliteUtils'
-import SatelliteInterface from './types/satelliteInterface'
+import { SatelliteType, SatelliteKeys } from './types/satelliteType'
+import { UnprocessedSatellites } from './types/parialSatelliteInterface'
 
 export default class Utilities {
 
     static satelliteHeaders = [
         'nameOfSatellite',
         'officialName',
-        'UnRegistryCountry',
+        'unRegistryCountry',
         'operatorCountry',
         'operator',
         'users',
         'purpose',
         'detailedPurpose',
         'classOfOrbit',
+        'typeOfOrbit',
         'longitudeOfGeo',
         'perigee',
         'apogee',
@@ -45,52 +48,57 @@ export default class Utilities {
         return true
     }
 
-    static getSatelitesFromFile(): Array<string[]> {
-        const data = fs.readFileSync('./ucs-satelite-db.txt', 'utf8')
+    static getSatelitesFromFile(): UnprocessedSatellites {
+        const data = fs.readFileSync('./satellites-db.json', 'utf8')
         if (!data) return []
-        const satelites = data.split('\n').slice(1)
-        const usableDataMaxIndex = this.satelliteHeaders.length
-        const splittedSatelitesData: Array<string[]> = []
-        satelites.forEach((value) => { splittedSatelitesData.push(value.split('\t').slice(0, usableDataMaxIndex)) })
-        return splittedSatelitesData.slice(0, splittedSatelitesData.length - 1)
+        return JSON.parse(data)
     }
 
     static countSatelitesFromFile(): number {
-        const data = fs.readFileSync('./ucs-satelite-db.txt', 'utf8')
-        if (!data) return 0
-        return data.split('\n').length - 2
+        return this.getSatelitesFromFile().length as number
     }
 
-    static prePopulateDatabase(satellites: SatelliteInterface[]): Promise<SatelliteInterface[]> {
-        const satellitesCreation: Promise<SatelliteInterface>[] = []
-        satellites.forEach((satellite) => {
-            satellitesCreation.push(SatelliteUtilities.createSatelite(satellite as SatelliteInterface))
+    static addMissingProps(satellitesList: UnprocessedSatellites): UnprocessedSatellites {
+        return satellitesList.map((item) => {
+            const currentKeys = Object.keys(item)
+            const missigPropertiesList = this.satelliteHeaders.filter((item) => !currentKeys.includes(item))
+            missigPropertiesList.forEach((property) => {
+                item[property] = ''
+            })
+            return item
         })
-
-        return Promise.all(satellitesCreation)
     }
 
-    static checkSatellitesPropsReliability(): {
-        completeSatellites: SatelliteInterface[],
-        incompleteSatellites: SatelliteInterface[]
-    } {
-        const headings = this.satelliteHeaders
-        type SatelliteField = typeof headings[number]
-        type ConstructedSatellite = {
-            [P in SatelliteField]: string | number
-        }
+    static replaceCommasWithDots(unprocessedSatellitesList: UnprocessedSatellites): SatelliteType[] {
+        const propsToCheck: SatelliteKeys[] = [
+            'longitudeOfGeo',
+            'perigee',
+            'apogee',
+            'inclination',
+            'period',
+            'launchMass',
+            'dryMass',
+            'power',
+            'expectedLifetime',
+            'cospar',
+            'norad'
+        ]
+
+        return unprocessedSatellitesList.map((item) => {
+            propsToCheck.forEach((property) => {
+                const value = item[property]?.toString() || ''
+                item[property] = parseFloat(value.replace(',', '.'))
+            })
+            return item
+        }) as SatelliteType[]
+    }
+
+    static standardizeSatellitesData(satellites: UnprocessedSatellites): SatelliteType[] {
+        return this.replaceCommasWithDots(this.addMissingProps(satellites))
+    }
+
+    static checkSatellitesPropsReliability(): SatelliteType[] {
         const satellitesFromFile = this.getSatelitesFromFile()
-
-        const satellitesCreation = satellitesFromFile.map((satellite) => {
-            const constructedSatellite = headings.reduce((accumulator, heading, index) => {
-                accumulator[heading] = satellite[index] ?? ''
-                return accumulator
-            }, {} as ConstructedSatellite)
-            return constructedSatellite as SatelliteInterface
-        })
-
-        const completeSatellites: SatelliteInterface[] = []
-        const incompleteSatellites: SatelliteInterface[] = []
 
         const requiredFields: string[] = [
             "officialName",
@@ -101,17 +109,43 @@ export default class Utilities {
             "purpose"
         ]
 
-        satellitesCreation.forEach((value) => {
-            if (Object.entries(value).some(propertyAndValue => requiredFields.includes(propertyAndValue[0]) && propertyAndValue[1] === '')) {
-                return incompleteSatellites.push(value)
-            }
-            completeSatellites.push(value)
+        const satellitesWithRequiredFields = satellitesFromFile.filter((item) => {
+            const currentKeys = Object.keys(item)
+            return requiredFields.every(item => currentKeys.includes(item))
         })
 
-        return {
-            completeSatellites,
-            incompleteSatellites
-        }
+        const standardizedSatellites = this.standardizeSatellitesData(satellitesWithRequiredFields)
+
+        const numFromStr = coerce(number(), string(), (value) => parseFloat(value))
+
+        const validatedSatellites = standardizedSatellites.filter(element => {
+            try {
+                create(element.longitudeOfGeo, numFromStr)
+                create(element.perigee, numFromStr)
+                create(element.apogee, numFromStr)
+                create(element.inclination, numFromStr)
+                create(element.period, numFromStr)
+                create(element.launchMass, numFromStr)
+                create(element.dryMass, numFromStr)
+                create(element.power, numFromStr)
+                create(element.expectedLifetime, numFromStr)
+                create(element.cospar, numFromStr)
+                create(element.norad, numFromStr)
+            } catch {
+                return false
+            }
+            return true
+        })
+
+        return validatedSatellites
+    }
+
+    static prePopulateDatabase(satellites: SatelliteType[]): Promise<SatelliteType[]> {
+        const satellitesCreation: Promise<SatelliteType>[] = satellites.map((satellite) => {
+            return SatelliteUtilities.createSatelite(satellite as SatelliteType)
+        })
+
+        return Promise.all(satellitesCreation)
     }
 
 }
