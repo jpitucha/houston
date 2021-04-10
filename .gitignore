@@ -106,3 +106,6 @@ dist
 # Compiled TypeScript files
 build
 database
+
+#VS Code config files
+.vscode/
