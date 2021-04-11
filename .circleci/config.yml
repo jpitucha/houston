@@ -1,7 +1,20 @@
 version: 2.1
-orbs:
-  node: circleci/node@3.0.0
+# orbs:
+#   node: circleci/node@3.0.0
 workflows:
-  node-tests:
+  lint:
     jobs:
-      - node/test
+      - lint
+
+jobs:
+  lint:
+    docker:
+      - image: cimg/node:14.13.0
+    steps:
+      - checkout
+      - run:
+        name: Deps
+        commands: npm install
+      - run:
+        name: Run Linter
+        command: npm run lint
