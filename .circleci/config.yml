@@ -13,8 +13,8 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Deps
-        commands: npm install
+          name: Deps
+          command: npm install
       - run:
-        name: Run Linter
-        command: npm run lint
+          name: Run Linter
+          command: npm run lint
