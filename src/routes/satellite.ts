@@ -1,9 +1,9 @@
 import express from "express";
-import n2yo from "./../api/n2yo/index.js";
+import n2yo from "../api/n2yo/index.js";
 import SatelliteUtilities from "../utils/satelliteUtils";
 import _ from "lodash";
 import SatelliteResponseInterface from '../utils/types/parialSatelliteInterface'
-import { GetTwoLineElementsRequest, GetSatelliteByIdRequest, GetSatelliteByNameRequest } from './../utils/types/extendedRequestInterface'
+import { GetTwoLineElementsRequest, GetSatelliteByIdRequest, GetSatelliteByNameRequest } from '../utils/types/extendedRequestInterface'
 
 const router = express.Router();
 

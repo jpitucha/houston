@@ -9,10 +9,16 @@ const validators: Record<string, typeof validateSatelliteIdRoute> = {
     '/satellite/by-name': validateSatelliteNameRoute
 }
 
-export default (req: Request, _res: Response, next: NextFunction): ReturnType<NextFunction> => {
+const satelliteRouteValidation = (req: Request, _res: Response, next: NextFunction): ReturnType<NextFunction> => {
     const currentValidator = validators[req.path]
 
     if (!currentValidator) throw new InvalidPathError('Invalid Path')
     if (!currentValidator(req)) throw new ValidationFailedError('Validation Failed')
     return next()
 }
+
+const userRouteValidation = (_req: Request, _res: Response, next: NextFunction): ReturnType<NextFunction> => {
+    return next()
+}
+
+export { satelliteRouteValidation, userRouteValidation }

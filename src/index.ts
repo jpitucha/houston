@@ -1,11 +1,12 @@
 import * as dotenv from 'dotenv'
 import express from 'express'
 import bodyParser from 'body-parser'
-import routes from './routes/local'
+import satelliteRoutes from './routes/satellite'
+import userRoutes from './routes/user'
 import dbConnectionProvider from './db/dbConnectionProvider'
 import Utilities from './utils/utils'
 import SatelliteUtilities from './utils/satelliteUtils'
-import satelliteRouteValidation from './validators'
+import { satelliteRouteValidation, userRouteValidation } from './validators'
 import errMiddleware from './middleware'
 
 dotenv.config()
@@ -31,7 +32,8 @@ prepareDatabase()
 const app = express()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use('/', satelliteRouteValidation, routes)
+app.use('/', satelliteRouteValidation, satelliteRoutes)
+app.use('/users', userRouteValidation, userRoutes)
 app.use(errMiddleware)
 app.listen(process.env.PORT, () => {
     console.log(`Houston running at http://localhost:${process.env.PORT}`)
