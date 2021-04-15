@@ -5,8 +5,8 @@ import { InvalidPathError, ValidationFailedError } from './../errors'
 
 const validators: Record<string, typeof validateSatelliteIdRoute> = {
     '/two-line-elements': validateSatelliteIdRoute,
-    '/satellite/by-id': validateSatelliteIdRoute,
-    '/satellite/by-name': validateSatelliteNameRoute
+    '/by-id': validateSatelliteIdRoute,
+    '/by-name': validateSatelliteNameRoute
 }
 
 const satelliteRouteValidation = (req: Request, _res: Response, next: NextFunction): ReturnType<NextFunction> => {

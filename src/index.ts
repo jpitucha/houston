@@ -32,7 +32,7 @@ prepareDatabase()
 const app = express()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use('/', satelliteRouteValidation, satelliteRoutes)
+app.use('/satellite', satelliteRouteValidation, satelliteRoutes)
 app.use('/users', userRouteValidation, userRoutes)
 app.use(errMiddleware)
 app.listen(process.env.PORT, () => {
