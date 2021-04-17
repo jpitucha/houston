@@ -17,3 +17,9 @@ export interface GetSatelliteByNameRequest extends Request {
         name: string
     }
 }
+
+export interface LoginUserRequest extends Request {
+    query: {
+        id: string
+    }
+}
