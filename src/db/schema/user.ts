@@ -1,11 +1,6 @@
 import mongoose from 'mongoose'
 
 const userObj = {
-    name: {
-        type: String,
-        required: true,
-        trim: true
-    },
     email: {
         type: String,
         required: true,
@@ -17,7 +12,10 @@ const userObj = {
     },
     favouriteSatellites: {
         type: Array
-    }
+    },
+    tokens: {
+        type: Array
+    },
 }
 
 const userSchema = new mongoose.Schema({ ...userObj })

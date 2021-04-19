@@ -19,7 +19,9 @@ export interface GetSatelliteByNameRequest extends Request {
 }
 
 export interface LoginUserRequest extends Request {
-    query: {
-        id: string
+    body: {
+        name: string,
+        mail: string,
+        password: string
     }
 }

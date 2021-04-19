@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import { validateSatelliteIdRoute } from './satelliteIdValidator'
 import { validateSatelliteNameRoute } from './satelliteNameValidator'
 import { validateUserIdRoute } from './userIdValidator'
+import { validateUserCredentials } from './userCredentialsValidator'
 import { InvalidPathError, ValidationFailedError } from './../errors'
 
 const satelliteValidators: Record<string, typeof validateSatelliteIdRoute> = {
@@ -19,7 +20,7 @@ const satelliteRouteValidation = (req: Request, _res: Response, next: NextFuncti
 }
 
 const userValidators: Record<string, typeof validateUserIdRoute> = {
-    '/login': validateUserIdRoute
+    '/signup': validateUserCredentials
 }
 
 const userRouteValidation = (req: Request, _res: Response, next: NextFunction): ReturnType<NextFunction> => {
