@@ -1,4 +1,5 @@
-import mongoose from 'mongoose'
+import mongoose, { Document } from 'mongoose'
+import { UserType } from '../../utils/types/userType'
 
 const userObj = {
     email: {
@@ -22,7 +23,9 @@ const userObj = {
     },
 }
 
-const userSchema = new mongoose.Schema({ ...userObj })
-const User = mongoose.model('user', userSchema)
+type UserDocument = Document & UserType
 
-export { User }
+const userSchema = new mongoose.Schema({ ...userObj })
+const User = mongoose.model<UserDocument>('user', userSchema)
+
+export { User, UserDocument }
