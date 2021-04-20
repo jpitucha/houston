@@ -35,6 +35,7 @@ Example **.env** file should have these options set:
 - DB_USERNAME
 - DB_PASSWORD
 - DB_URL
+- JWT_SECRET
 
 After that just type `docker-compose up`
 

@@ -1,7 +1,7 @@
 import express from 'express'
-import { User } from './../db/schema/user'
-import { Document } from 'mongoose'
+import { User, UserDocument } from './../db/schema/user'
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
 const router = express.Router()
 
@@ -26,8 +26,14 @@ router.post('/signup', async (req, res) => {
 
     newUser
     .save()
-    .then((document: Document) => {
-        res.json(document)
+    .then((document: UserDocument) => {
+        const token = jwt.sign({ email: document.email }, process.env.JWT_SECRET as string)
+        document.tokens.push(token)
+        return document.save()
+    })
+    .then ((document: UserDocument) => {
+        const tokenCount = document.tokens.length
+        res.json(document.tokens[tokenCount - 1])
     })
     .catch(() => {
         res.status(400).json("err") //TODO maybe better error handling?
@@ -38,5 +44,7 @@ router.post('/signup', async (req, res) => {
 // router.post('/login', (_req, _res) => {})
 
 // router.post('/logout', (_req, _res) => {})
+
+// new pass
 
 export default router
