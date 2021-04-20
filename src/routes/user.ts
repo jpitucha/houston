@@ -1,6 +1,7 @@
 import express from 'express'
 import { User } from './../db/schema/user'
 import { Document } from 'mongoose'
+import bcrypt from 'bcrypt'
 
 const router = express.Router()
 
@@ -10,13 +11,17 @@ router.post('/signup', async (req, res) => {
         email: req.body.email
     })
 
-    if (userExists) {
+    if (userExists.length != 0) {
         return res.status(400).json("User already exists")
     }
 
+    const salt = await bcrypt.genSalt(10)
+    const password = await bcrypt.hash(req.body.password, salt)
+
     const newUser = new User({
         email: req.body.email,
-        password: req.body.password
+        password,
+        salt
     })
 
     newUser

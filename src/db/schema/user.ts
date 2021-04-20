@@ -10,6 +10,10 @@ const userObj = {
         type: String,
         required: true
     },
+    salt: {
+        type: String,
+        required: true
+    },
     favouriteSatellites: {
         type: Array
     },
