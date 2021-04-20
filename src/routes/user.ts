@@ -4,7 +4,16 @@ import { Document } from 'mongoose'
 
 const router = express.Router()
 
-router.post('/signup', (req, res) => {
+router.post('/signup', async (req, res) => {
+
+    const userExists = await User.find({
+        email: req.body.email
+    })
+
+    if (userExists) {
+        return res.status(400).json("User already exists")
+    }
+
     const newUser = new User({
         email: req.body.email,
         password: req.body.password
