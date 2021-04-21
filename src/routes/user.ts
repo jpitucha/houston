@@ -9,7 +9,7 @@ router.post('/signup', async (req, res) => {
 
     const userExists = await User.find({
         email: req.body.email
-    })
+    }).exec()
 
     if (userExists.length != 0) {
         return res.status(400).json("User already exists")
@@ -41,7 +41,36 @@ router.post('/signup', async (req, res) => {
 
 })
 
-// router.post('/login', (_req, _res) => {})
+router.post('/login', async (req, res) => {
+
+    const user = await User.findOne({
+        email: req.body.email
+    }).exec()
+
+    if (!user) {
+        return res.status(400).json('No user found')
+    }
+
+    const hashedPassword = await bcrypt.hash(req.body.password, user.salt)
+    const isMatch = hashedPassword === user.password
+
+    if(!isMatch) {
+        return res.status(400).json('Wrong password') //TODO less detailed messages?
+    }
+
+    const token = jwt.sign({ email: req.body.email}, process.env.JWT_SECRET as string)
+    user.tokens.push(token)
+    
+    user
+    .save()
+    .then(() => {
+        res.json(token)
+    })
+    .catch(() => {
+        res.status(200).json('Error while signing in')
+    })
+})
+
 
 // router.post('/logout', (_req, _res) => {})
 
