@@ -1,74 +1,48 @@
 import express from 'express'
-import { User, UserDocument } from './../db/schema/user'
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
+import { UserDocument } from '../utils/types/userType'
+import { UserService } from './../services/userService'
 
 const router = express.Router()
 
 router.post('/signup', async (req, res) => {
 
-    const userExists = await User.find({
-        email: req.body.email
-    }).exec()
-
-    if (userExists.length != 0) {
+    if ((await UserService.tryToGetUser(req.body.email)).length == 1) {
         return res.status(400).json("User already exists")
     }
 
-    const salt = await bcrypt.genSalt(10)
-    const password = await bcrypt.hash(req.body.password, salt)
+    const newUser = await UserService.createUserObject(req.body.email, req.body.password)
+    const loggedUser = UserService.loginUser(newUser)
+    const savingResult = await UserService.saveUserToDatabase(loggedUser)
 
-    const newUser = new User({
-        email: req.body.email,
-        password,
-        salt
-    })
+    if(savingResult == 'error') {
+        return res.status(400).json("Error while saving")
+    }
 
-    newUser
-    .save()
-    .then((document: UserDocument) => {
-        const token = jwt.sign({ email: document.email }, process.env.JWT_SECRET as string)
-        document.tokens.push(token)
-        return document.save()
-    })
-    .then ((document: UserDocument) => {
-        const tokenCount = document.tokens.length
-        res.json(document.tokens[tokenCount - 1])
-    })
-    .catch(() => {
-        res.status(400).json("err") //TODO maybe better error handling?
-    })
-
+    return res.json(savingResult)
 })
 
 router.post('/login', async (req, res) => {
 
-    const user = await User.findOne({
-        email: req.body.email
-    }).exec()
+    const userExists = await UserService.tryToGetUser(req.body.email)
 
-    if (!user) {
-        return res.status(400).json('No user found')
+    if (userExists.length == 0) {
+        return res.status(400).json("No user found")
     }
 
-    const hashedPassword = await bcrypt.hash(req.body.password, user.salt)
-    const isMatch = hashedPassword === user.password
-
-    if(!isMatch) {
-        return res.status(400).json('Wrong password') //TODO less detailed messages?
+    if (!await UserService.checkIfPasswordsMatch(req.body.password, userExists[0] as UserDocument)) {
+        return res.status(400).json("Error while signing in")
     }
 
-    const token = jwt.sign({ email: req.body.email}, process.env.JWT_SECRET as string)
-    user.tokens.push(token)
+    const loggedUser = UserService.loginUser(userExists[0] as UserDocument)
+
+    try {
+        await loggedUser.save()   
+    } catch {
+        return res.status(200).json('Error while signing in')
+    }
+
+    res.json(loggedUser.tokens[loggedUser.tokens.length - 1])
     
-    user
-    .save()
-    .then(() => {
-        res.json(token)
-    })
-    .catch(() => {
-        res.status(200).json('Error while signing in')
-    })
 })
 
 

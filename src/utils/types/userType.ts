@@ -1,3 +1,5 @@
+import { Document } from 'mongoose'
+
 export type UserType = {
     email: string,
     password: string,
@@ -7,3 +9,5 @@ export type UserType = {
 }
 
 export type UserKeys = keyof UserType
+
+export type UserDocument = Document & UserType

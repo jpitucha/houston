@@ -1,5 +1,5 @@
-import mongoose, { Document } from 'mongoose'
-import { UserType } from '../../utils/types/userType'
+import mongoose from 'mongoose'
+import { UserDocument } from './../../utils/types/userType'
 
 const userObj = {
     email: {
@@ -23,9 +23,7 @@ const userObj = {
     },
 }
 
-type UserDocument = Document & UserType
-
 const userSchema = new mongoose.Schema({ ...userObj })
 const User = mongoose.model<UserDocument>('user', userSchema)
 
-export { User, UserDocument }
+export { User }
