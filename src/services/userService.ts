@@ -1,5 +1,5 @@
 import { User } from './../db/schema/user'
-import bcrypt from 'bcrypt'
+import bcryptjs from 'bcryptjs'
 import { UserDocument } from './../utils/types/userType'
 import jwt from 'jsonwebtoken'
 
@@ -10,13 +10,14 @@ export class UserService {
     }
 
     static async checkIfPasswordsMatch(password: string, user: UserDocument): Promise<boolean> {
-        const hashedPassword = await bcrypt.hash(password, user.salt)
-        return hashedPassword === user.password
+        const hashedPassword = await bcryptjs.hash(password, user.salt)
+        const match = await bcryptjs.compare(password, hashedPassword)
+        return match
     }
 
     static async createUserObject(email: string, password: string): Promise<UserDocument> {
-        const salt = await bcrypt.genSalt(10)
-        const hashedPassword = await bcrypt.hash(password, salt)
+        const salt = await bcryptjs.genSalt(10)
+        const hashedPassword = await bcryptjs.hash(password, salt)
 
         return new User({
             email,
