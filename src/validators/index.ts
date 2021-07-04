@@ -21,7 +21,8 @@ const satelliteRouteValidation = (req: Request, _res: Response, next: NextFuncti
 
 const userValidators: Record<string, typeof validateUserIdRoute> = {
     '/signup': validateUserCredentials,
-    '/login': validateUserCredentials
+    '/login': validateUserCredentials,
+    '/logout': validateUserCredentials
 }
 
 const userRouteValidation = (req: Request, _res: Response, next: NextFunction): ReturnType<NextFunction> => {

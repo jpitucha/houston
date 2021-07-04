@@ -1,53 +1,65 @@
 import express from 'express'
 import { UserDocument } from '../utils/types/userType'
 import { UserService } from './../services/userService'
+import { Messages } from './../errors/mesages'
 
 const router = express.Router()
 
 router.post('/signup', async (req, res) => {
 
-    if ((await UserService.tryToGetUser(req.body.email)).length == 1) {
+    if (await UserService.tryToGetUser(req.body.email)) {
         return res.status(400).json("User already exists")
     }
 
     const newUser = await UserService.createUserObject(req.body.email, req.body.password)
-    const loggedUser = UserService.loginUser(newUser)
-    const savingResult = await UserService.saveUserToDatabase(loggedUser)
+    const savingResult = await UserService.saveUserToDatabase(newUser)
 
-    if(savingResult == 'error') {
-        return res.status(400).json("Error while saving")
+    if(savingResult == Messages.ERROR) {
+        return res.status(400).json(Messages.ERROR_SAVING)
     }
 
-    return res.json(savingResult)
+    const loggedUser = UserService.loginUser(newUser)
+
+    return res.json(loggedUser)
 })
 
 router.post('/login', async (req, res) => {
 
     const userExists = await UserService.tryToGetUser(req.body.email)
 
-    if (userExists.length == 0) {
-        return res.status(400).json("No user found")
+    if (!userExists) {
+        return res.status(400).json(Messages.NO_USER)
     }
 
-    if (!await UserService.checkIfPasswordsMatch(req.body.password, userExists[0] as UserDocument)) {
-        return res.status(400).json("Error while signing in")
+    if (!await UserService.checkIfPasswordsMatch(req.body.password, userExists as UserDocument)) {
+        return res.status(400).json(Messages.ERROR_SIGNING)
     }
 
-    const loggedUser = UserService.loginUser(userExists[0] as UserDocument)
+    const loggedUser = UserService.loginUser(userExists as UserDocument)
 
-    try {
-        await loggedUser.save()   
-    } catch {
-        return res.status(200).json('Error while signing in')
-    }
-
-    res.json(loggedUser.tokens[loggedUser.tokens.length - 1])
-    
+    res.json(loggedUser)
 })
 
 
-// router.post('/logout', (_req, _res) => {})
+router.post('/logout', async (req, res) => {
 
-// new pass
+    const userExists = await UserService.tryToGetUser(req.body.email)
+
+    if (!userExists) {
+        return res.status(400).json(Messages.NO_USER)
+    }
+
+    if (!await UserService.checkIfPasswordsMatch(req.body.password, userExists as UserDocument)) {
+        return res.status(400).json(Messages.ERROR_SIGNING)
+    }
+
+    const result = UserService.logoutUser(userExists as UserDocument)
+
+    if (!result) {
+        return res.status(400).json(Messages.ERROR_LOGOUT)
+    }
+
+    res.json(Messages.LOGOUT_OK)
+})
 
 export default router

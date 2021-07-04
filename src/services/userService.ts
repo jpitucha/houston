@@ -2,11 +2,12 @@ import { User } from './../db/schema/user'
 import bcryptjs from 'bcryptjs'
 import { UserDocument } from './../utils/types/userType'
 import jwt from 'jsonwebtoken'
+import { Messages } from '../errors/mesages'
 
 export class UserService {
-    static async tryToGetUser(email: string): Promise<UserDocument[]> {
+    static async tryToGetUser(email: string): Promise<UserDocument> {
         const userExists = await User.find({ email }).exec()
-        return userExists
+        return userExists[0] as UserDocument
     }
 
     static async checkIfPasswordsMatch(password: string, user: UserDocument): Promise<boolean> {
@@ -26,20 +27,32 @@ export class UserService {
         })
     }
 
-    static async saveUserToDatabase(user: UserDocument) {
+    static async saveUserToDatabase(user: UserDocument): Promise<UserDocument | string> {
         return user.save()
         .then((document: UserDocument) => {
-            const tokenCount = document.tokens.length
-            return document.tokens[tokenCount - 1]
+            return document
         })
         .catch(() => {
-            return "error"
+            return Messages.ERROR_SAVING
         })
     }
 
-    static loginUser(user: UserDocument): UserDocument {
+    static loginUser(user: UserDocument): Promise<string> {
         const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET as string)
         user.tokens.push(token)
-        return user
+        return user.save()
+        .then((document: UserDocument) => {
+            return document.tokens[document.tokens.length - 1] as string
+        })
+        .catch(() => {
+            return Messages.ERROR_LOGIN
+        })
+    }
+
+    static logoutUser(user: UserDocument): boolean {
+        user
+        return true
+
+        //user.tokens.filter(el => el !== )
     }
 }
