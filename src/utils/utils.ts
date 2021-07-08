@@ -45,6 +45,7 @@ export default class Utilities {
         if (!process.env.DB_USERNAME) return false
         if (!process.env.DB_PASSWORD) return false
         if (!process.env.DB_URL) return false
+        if (!process.env.JWT_SECRET) return false
         return true
     }
 

@@ -1,18 +1,36 @@
 import { NextFunction, Request, Response } from 'express'
 import { validateSatelliteIdRoute } from './satelliteIdValidator'
 import { validateSatelliteNameRoute } from './satelliteNameValidator'
+import { validateUserIdRoute } from './userIdValidator'
+import { validateUserCredentials } from './userCredentialsValidator'
 import { InvalidPathError, ValidationFailedError } from './../errors'
 
-const validators: Record<string, typeof validateSatelliteIdRoute> = {
+const satelliteValidators: Record<string, typeof validateSatelliteIdRoute> = {
     '/two-line-elements': validateSatelliteIdRoute,
-    '/satellite/by-id': validateSatelliteIdRoute,
-    '/satellite/by-name': validateSatelliteNameRoute
+    '/by-id': validateSatelliteIdRoute,
+    '/by-name': validateSatelliteNameRoute
 }
 
-export default (req: Request, _res: Response, next: NextFunction): ReturnType<NextFunction> => {
-    const currentValidator = validators[req.path]
+const satelliteRouteValidation = (req: Request, _res: Response, next: NextFunction): ReturnType<NextFunction> => {
+    const currentValidator = satelliteValidators[req.path]
 
     if (!currentValidator) throw new InvalidPathError('Invalid Path')
     if (!currentValidator(req)) throw new ValidationFailedError('Validation Failed')
     return next()
 }
+
+const userValidators: Record<string, typeof validateUserIdRoute> = {
+    '/signup': validateUserCredentials,
+    '/login': validateUserCredentials,
+    '/logout': validateUserCredentials
+}
+
+const userRouteValidation = (req: Request, _res: Response, next: NextFunction): ReturnType<NextFunction> => {
+    const currentValidator = userValidators[req.path]
+
+    if (!currentValidator) throw new InvalidPathError('Invalid Path')
+    if (!currentValidator(req)) throw new ValidationFailedError('Validation Failed')
+    return next()
+}
+
+export { satelliteRouteValidation, userRouteValidation }

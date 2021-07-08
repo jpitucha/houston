@@ -17,3 +17,11 @@ export interface GetSatelliteByNameRequest extends Request {
         name: string
     }
 }
+
+export interface LoginUserRequest extends Request {
+    body: {
+        name: string,
+        mail: string,
+        password: string
+    }
+}

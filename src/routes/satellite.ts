@@ -1,9 +1,9 @@
 import express from "express";
-import n2yo from "./../api/n2yo/index.js";
+import n2yo from "../api/n2yo/index.js";
 import SatelliteUtilities from "../utils/satelliteUtils";
 import _ from "lodash";
 import SatelliteResponseInterface from '../utils/types/parialSatelliteInterface'
-import { GetTwoLineElementsRequest, GetSatelliteByIdRequest, GetSatelliteByNameRequest } from './../utils/types/extendedRequestInterface'
+import { GetTwoLineElementsRequest, GetSatelliteByIdRequest, GetSatelliteByNameRequest } from '../utils/types/extendedRequestInterface'
 
 const router = express.Router();
 
@@ -25,7 +25,7 @@ router.get("/two-line-elements",
       .catch(() => res.sendStatus(400));
   });
 
-router.get("/satellite/by-id",
+router.get("/by-id",
   (req: GetSatelliteByIdRequest, res) => {
     return SatelliteUtilities.getSatelliteById(req.query.id)
       .then((satelliteDoc) => {
@@ -37,7 +37,7 @@ router.get("/satellite/by-id",
       });
   })
 
-router.get("/satellite/by-name",
+router.get("/by-name",
   (req: GetSatelliteByNameRequest, res) => {
     return SatelliteUtilities.getSatelliteByName(req.query.name)
       .then((satelliteDoc) => {
