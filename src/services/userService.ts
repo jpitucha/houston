@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken'
 import { Messages } from '../errors/mesages'
 
 export class UserService {
-    static async tryToGetUser(email: string): Promise<UserDocument> {
+    static async findUser(email: string): Promise<UserDocument> {
         const userExists = await User.find({ email }).exec()
         return userExists[0] as UserDocument
     }
