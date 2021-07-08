@@ -7,7 +7,7 @@ const router = express.Router()
 
 router.post('/signup', async (req, res) => {
 
-    if (await UserService.tryToGetUser(req.body.email)) {
+    if (await UserService.findUser(req.body.email)) {
         return res.status(400).json("User already exists")
     }
 
@@ -25,7 +25,7 @@ router.post('/signup', async (req, res) => {
 
 router.post('/login', async (req, res) => {
 
-    const userExists = await UserService.tryToGetUser(req.body.email)
+    const userExists = await UserService.findUser(req.body.email)
 
     if (!userExists) {
         return res.status(400).json(Messages.NO_USER)
@@ -43,7 +43,7 @@ router.post('/login', async (req, res) => {
 
 router.post('/logout', async (req, res) => {
 
-    const userExists = await UserService.tryToGetUser(req.body.email)
+    const userExists = await UserService.findUser(req.body.email)
 
     if (!userExists) {
         return res.status(400).json(Messages.NO_USER)
